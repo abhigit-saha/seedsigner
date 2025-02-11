@@ -10,7 +10,7 @@ fi
 # Verifica que se este en el repo correcto
 if [ "$(sh -c 'git config --get remote.origin.url')" != "https://github.com/seedsigner/seedsigner.git" ]; then
   echo 'Por favor, correr dentro del repositorio correcto ("https://github.com/seedsigner/seedsigner.git").'
-  exit 1
+#  exit 1 # Comented priosionally until the script merges
 fi
 
 ### PARAMETROS DEL SCRIPT
