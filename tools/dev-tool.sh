@@ -48,12 +48,13 @@ if [ -z "$3" ] || [ "$3" = "-" ]; then
 else
   PYTHON_PATH=$(which $3)
   if [ -z "$PYTHON_PATH" ]; then
-    echo "No se encontró Python $2 en tu PATH."
+    echo "No se encontró Python $3 en tu PATH."
     exit 1
   fi
   alias python=$PYTHON_PATH
   alias python3=$PYTHON_PATH
-  echo "Usando version de python '$(python --version)'" # ANALIZAR, no arroja bien
+  shopt -s expand_aliases  
+  echo "Usando version de python '$(python --version)'"
 fi
 
 ### DEPENDENCIAS NECESARIAS (Seccion en revision/debug)
