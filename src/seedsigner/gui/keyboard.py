@@ -302,7 +302,7 @@ class Keyboard:
             Renders just the keys of the keyboard. Useful when you need to redraw just
             that section, as in when changing `active_keys` or swapping to alternate
             charsets (e.g. alpha to special symbols).
-
+            
             Does NOT call self.renderer.show_image to avoid multiple calls on the same screen.
         """
         # Start with a clear screen

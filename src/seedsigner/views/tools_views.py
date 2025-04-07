@@ -220,7 +220,7 @@ class ToolsDiceEntropyEntryView(View):
         super().__init__()
         self.total_rolls = total_rolls
     
-
+    
     def run(self):
         from seedsigner.gui.screens.tools_screens import ToolsDiceEntropyEntryScreen
         ret = ToolsDiceEntropyEntryScreen(
@@ -230,10 +230,12 @@ class ToolsDiceEntropyEntryView(View):
         if ret == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
         
-        dice_seed_phrase = mnemonic_generation.generate_mnemonic_from_dice(ret)
+        wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
+        
+        dice_seed_phrase = mnemonic_generation.generate_mnemonic_from_dice(ret, wordlist_language_code=wordlist_language_code)
 
         # Add the mnemonic as an in-memory Seed
-        seed = Seed(dice_seed_phrase, wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
+        seed = Seed(dice_seed_phrase, wordlist_language_code=wordlist_language_code)
         self.controller.storage.set_pending_seed(seed)
 
         # Cannot return BACK to this View
@@ -346,7 +348,7 @@ class ToolsCalcFinalWordShowFinalWordView(View):
         #   * 3 bits to a 24-word seed (plus 8-bit checksum)
         #   * 7 bits to a 12-word seed (plus 4-bit checksum)
         from seedsigner.helpers import mnemonic_generation
-
+        
         wordlist_language_code = self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
         wordlist = Seed.get_wordlist(wordlist_language_code)
 

@@ -5,6 +5,8 @@ import hmac
 
 from binascii import hexlify
 from embit import bip39, bip32, bip85
+
+from seedsigner.helpers.bip39 import WORDLIST__ENGLISH, WORDLIST__FRENCH, WORDLIST__ITALIAN, WORDLIST__PORTUGUESE, WORDLIST__SPANISH
 from embit.networks import NETWORKS
 from typing import List
 
@@ -27,11 +29,13 @@ class Seed:
 
         if not mnemonic:
             raise Exception("Must initialize a Seed with a mnemonic List[str]")
+        
+        print(f"mnemonic: {mnemonic}")
         self._mnemonic: List[str] = unicodedata.normalize("NFKD", " ".join(mnemonic).strip()).split()
-
+        print(f"mnemonic after normalizing: {self._mnemonic}")
         self._passphrase: str = ""
         self.set_passphrase(passphrase, regenerate_seed=False)
-
+        
         self.seed_bytes: bytes = None
         self._generate_seed()
 
@@ -39,10 +43,7 @@ class Seed:
     @staticmethod
     def get_wordlist(wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__ENGLISH) -> List[str]:
         # TODO: Support other BIP-39 wordlist languages!
-        if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__ENGLISH:
-            return bip39.WORDLIST
-        else:
-            raise Exception(f"Unrecognized wordlist_language_code {wordlist_language_code}")
+        return SettingsConstants.map_wordlist_language_to_wordlist(wordlist_language_code)
 
 
     def _generate_seed(self):
@@ -110,10 +111,11 @@ class Seed:
     def wordlist(self) -> List[str]:
         return Seed.get_wordlist(self.wordlist_language_code)
 
+    
 
     def set_wordlist_language_code(self, language_code: str):
         # TODO: Support other BIP-39 wordlist languages!
-        raise Exception("Not yet implemented!")
+        self._wordlist_language_code = language_code;
 
 
     @property

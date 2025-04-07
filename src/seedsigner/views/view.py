@@ -122,14 +122,14 @@ class View:
 class Destination:
     """
         Basic struct to pass back to the Controller to tell it which View the user should
-        be presented with next.
+        be presented with next.         
     """
     View_cls: Type[View]                # The target View to route to
     view_args: dict = None              # The input args required to instantiate the target View
     skip_current_view: bool = False     # The current View is just forwarding; omit current View from history
     clear_history: bool = False         # Optionally clears the back_stack to prevent "back"
 
-
+    
     def __repr__(self):
         if self.View_cls is None:
             out = "None"

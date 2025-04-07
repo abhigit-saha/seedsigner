@@ -34,7 +34,7 @@ class SettingsMenuView(View):
         selected_button = 0
         if self.selected_attr:
             for i, entry in enumerate(settings_entries):
-                if entry.attr_name == self.selected_attr:
+                if entry.attr_name == self.selected_attr:   
                     selected_button = i
                     break
 

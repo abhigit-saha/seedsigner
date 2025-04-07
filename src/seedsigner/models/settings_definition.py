@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, List
 
 from seedsigner.helpers.l10n import mark_for_translation as _mft
-
+from seedsigner.helpers.bip39 import WORDLIST__ENGLISH, WORDLIST__FRENCH, WORDLIST__ITALIAN, WORDLIST__PORTUGUESE, WORDLIST__SPANISH
 
 class SettingsConstants:
     # Basic defaults
@@ -161,18 +161,32 @@ class SettingsConstants:
     WORDLIST_LANGUAGE__JAPANESE = "jp"
     WORDLIST_LANGUAGE__KOREAN = "kr"
     WORDLIST_LANGUAGE__PORTUGUESE = "pt"
+    WORDLIST_LANGUAGE__SPANISH = "es"
     ALL_WORDLIST_LANGUAGES = [
         (WORDLIST_LANGUAGE__ENGLISH, "English"),
         # (WORDLIST_LANGUAGE__CHINESE_SIMPLIFIED, "简体中文"),
         # (WORDLIST_LANGUAGE__CHINESE_TRADITIONAL, "繁體中文"),
-        # (WORDLIST_LANGUAGE__FRENCH, "Français"),
-        # (WORDLIST_LANGUAGE__ITALIAN, "Italiano"),
+        (WORDLIST_LANGUAGE__FRENCH, "Français"),
+        (WORDLIST_LANGUAGE__ITALIAN, "Italiano"),
         # (WORDLIST_LANGUAGE__JAPANESE, "日本語"),
         # (WORDLIST_LANGUAGE__KOREAN, "한국어"),
-        # (WORDLIST_LANGUAGE__PORTUGUESE, "Português"),
+        (WORDLIST_LANGUAGE__PORTUGUESE, "Português"),
+        (WORDLIST_LANGUAGE__SPANISH, "Español"),
     ]
+    @classmethod
+    def map_wordlist_language_to_wordlist(cls, wordlist_language_code: str) -> list[str]:
+        supported_languages = {SettingsConstants.WORDLIST_LANGUAGE__ENGLISH: WORDLIST__ENGLISH, 
+                               SettingsConstants.WORDLIST_LANGUAGE__FRENCH:WORDLIST__FRENCH, 
+                               SettingsConstants.WORDLIST_LANGUAGE__ITALIAN: WORDLIST__ITALIAN, 
+                               SettingsConstants.WORDLIST_LANGUAGE__PORTUGUESE: WORDLIST__PORTUGUESE,
+                               SettingsConstants.WORDLIST_LANGUAGE__SPANISH: WORDLIST__SPANISH};
+        if wordlist_language_code in supported_languages:
+            return supported_languages[wordlist_language_code]
+        else:
+            raise Exception(f"Unrecognized wordlist_language_code {wordlist_language_code}")
+        
 
-    
+
     # Individual SettingsEntry attr_names
     # Note: attr_names are internal constants; do not wrap for translation
     SETTING__LOCALE = "locale"
@@ -391,7 +405,7 @@ class SettingsDefinition:
                       abbreviated_name="wordlist_lang",
                       display_name=_mft("Mnemonic language"),
                       type=SettingsConstants.TYPE__SELECT_1,
-                      visibility=SettingsConstants.VISIBILITY__HIDDEN,
+                    #   visibility=SettingsConstants.VISIBILITY__HIDDEN,
                       selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
                       default_value=SettingsConstants.WORDLIST_LANGUAGE__ENGLISH),
 
