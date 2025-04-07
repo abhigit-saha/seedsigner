@@ -30,12 +30,10 @@ class Seed:
         if not mnemonic:
             raise Exception("Must initialize a Seed with a mnemonic List[str]")
         
-        print(f"mnemonic: {mnemonic}")
         self._mnemonic: List[str] = unicodedata.normalize("NFKD", " ".join(mnemonic).strip()).split()
-        print(f"mnemonic after normalizing: {self._mnemonic}")
         self._passphrase: str = ""
         self.set_passphrase(passphrase, regenerate_seed=False)
-        
+
         self.seed_bytes: bytes = None
         self._generate_seed()
 
