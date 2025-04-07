@@ -148,7 +148,7 @@ class Controller(Singleton):
             # Instantiate the one and only Controller instance
             return cls.configure_instance()
     
-
+    
     @classmethod
     def reset_instance(cls):
         """
@@ -239,7 +239,7 @@ class Controller(Singleton):
     def clear_back_stack(self):
         self.back_stack = BackStack()
 
-
+    
     def start(self, initial_destination: Destination = None) -> None:
         """
             The main loop of the application.

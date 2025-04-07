@@ -164,7 +164,7 @@ class LoadSeedView(View):
     TYPE_24WORD = ButtonOption("Enter 24-word seed", FontAwesomeIconConstants.KEYBOARD)
     TYPE_ELECTRUM = ButtonOption("Enter Electrum seed", FontAwesomeIconConstants.KEYBOARD)
     CREATE = ButtonOption("Create a seed", SeedSignerIconConstants.PLUS)
-
+    
     def run(self):
         button_data = [
             self.SEED_QR,
@@ -174,7 +174,8 @@ class LoadSeedView(View):
 
         if self.settings.get_value(SettingsConstants.SETTING__ELECTRUM_SEEDS) == SettingsConstants.OPTION__ENABLED:
             button_data.append(self.TYPE_ELECTRUM)
-        
+        wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
+
         button_data.append(self.CREATE)
 
         selected_menu_num = self.run_screen(
@@ -183,7 +184,7 @@ class LoadSeedView(View):
             is_button_text_centered=False,
             button_data=button_data
         )
-
+        
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
         
@@ -193,11 +194,17 @@ class LoadSeedView(View):
         
         elif button_data[selected_menu_num] == self.TYPE_12WORD:
             self.controller.storage.init_pending_mnemonic(num_words=12)
-            return Destination(SeedMnemonicEntryView)
+            if wordlist_language_code=="en": 
+                return Destination(SeedMnemonicEntryView)
+            else:
+                return Destination(SeedWordlistLanguageWarningView)
 
         elif button_data[selected_menu_num] == self.TYPE_24WORD:
             self.controller.storage.init_pending_mnemonic(num_words=24)
-            return Destination(SeedMnemonicEntryView)
+            if wordlist_language_code=="en": 
+                return Destination(SeedMnemonicEntryView)
+            else:
+                return Destination(SeedWordlistLanguageWarningView)
 
         elif button_data[selected_menu_num] == self.TYPE_ELECTRUM:
             return Destination(SeedElectrumMnemonicStartView)
@@ -205,8 +212,26 @@ class LoadSeedView(View):
         elif button_data[selected_menu_num] == self.CREATE:
             from .tools_views import ToolsMenuView
             return Destination(ToolsMenuView)
+        
+class SeedWordlistLanguageWarningView(View): 
+    CONTINUE = ButtonOption("Continue", button_label_color="red")
+    BACK = ButtonOption("Go Back")
+    def __init__(self): 
+        super().__init__();
 
+    def run(self): 
+        button_data = [self.CONTINUE, self.BACK]
+        ret = self.run_screen(
+            seed_screens.SeedWordsLanguageWarningScreen, 
+            title=_("Non-English wordlist warning"),
+            wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE),
+            button_data= button_data,
+        )
 
+        if ret==RET_CODE__BACK_BUTTON or button_data[ret]==self.BACK: 
+            return Destination(BackStackView)
+        
+        return Destination(SeedMnemonicEntryView)
 
 class SeedMnemonicEntryView(View):
     def __init__(self, cur_word_index: int = 0, is_calc_final_word: bool=False):
@@ -223,6 +248,8 @@ class SeedMnemonicEntryView(View):
             title=_("Seed Word #{}").format(self.cur_word_index + 1),  # Human-readable 1-indexing!
             initial_letters=list(self.cur_word) if self.cur_word else ["a"],
             wordlist=Seed.get_wordlist(wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)),
+            #TODO: add a standardized way to get the possible alphabet
+            possible_alphabet=_("abcdefghijklmnopqrstuvwxyz"),
         )
 
         if ret == RET_CODE__BACK_BUTTON:
@@ -259,11 +286,13 @@ class SeedMnemonicEntryView(View):
             # Attempt to finalize the mnemonic
             from seedsigner.models.seed import InvalidSeedException
             try:
-                self.controller.storage.convert_pending_mnemonic_to_pending_seed()
+                wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
+                self.controller.storage.convert_pending_mnemonic_to_pending_seed(wordlist_language_code)
             except InvalidSeedException:
                 return Destination(SeedMnemonicInvalidView)
 
             return Destination(SeedFinalizeView)
+
 
 
 

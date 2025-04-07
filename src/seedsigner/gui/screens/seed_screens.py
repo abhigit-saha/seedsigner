@@ -14,6 +14,7 @@ from seedsigner.gui.components import (Button, FontAwesomeIconConstants, Fonts, 
 from seedsigner.gui.keyboard import Keyboard, TextEntryDisplay
 from seedsigner.gui.renderer import Renderer
 from seedsigner.models.threads import BaseThread, ThreadsafeCounter
+from seedsigner.models.settings import SettingsConstants
 
 from .screen import RET_CODE__BACK_BUTTON, BaseScreen, BaseTopNavScreen, ButtonListScreen, ButtonOption, KeyboardScreen, LargeIconStatusScreen, WarningEdgesMixin
 
@@ -25,12 +26,11 @@ logger = logging.getLogger(__name__)
 class SeedMnemonicEntryScreen(BaseTopNavScreen):
     initial_letters: list = None
     wordlist: list = None
-
+    possible_alphabet: str = None
+    
     def __post_init__(self):
         super().__post_init__()
-
-        self.possible_alphabet = "abcdefghijklmnopqrstuvwxyz"
-
+        
         # Set up the keyboard params
         self.keyboard_width = 128
         text_entry_display_y = self.top_nav.height
@@ -39,7 +39,6 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         self.arrow_up_is_active = False
         self.arrow_down_is_active = False
 
-        # TODO: support other BIP39 languages/charsets
         self.keyboard = Keyboard(
             draw=self.image_draw,
             charset=self.possible_alphabet,
@@ -122,6 +121,12 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         self.matches_list_row_height = self.word_font_height + GUIConstants.COMPONENT_PADDING
 
 
+    def remove_accents(self, text):
+        import unicodedata
+        return ''.join(
+            c for c in unicodedata.normalize('NFKD', text) 
+            if unicodedata.category(c) != 'Mn'
+        )
     def calc_possible_alphabet(self, new_letter = False):
         if (self.letters and len(self.letters) > 1 and new_letter == False) or (len(self.letters) > 0 and new_letter == True):
             search_letters = self.letters[:]
@@ -130,9 +135,12 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             self.calc_possible_words()
             letter_num = len(search_letters)
             possible_letters = []
+
             for word in self.possible_words:
+                word = self.remove_accents(word);
                 if len(word)-1 >= letter_num:
-                    possible_letters.append(word[letter_num])
+                    # possible_letter = unicodedata.normalize('NFKD', word[letter_num]);
+                    possible_letters.append(word[letter_num]) #TODO: here convert accented letters to normal letters.
             # remove duplicates and keep order
             self.possible_alphabet = list(dict.fromkeys(possible_letters))[:]
         else:
@@ -141,8 +149,10 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
 
 
     def calc_possible_words(self):
-        self.possible_words = [i for i in self.wordlist if i.startswith("".join(self.letters).strip())]
-        self.selected_possible_words_index = 0        
+        import unicodedata
+        input_text = "".join(self.letters).strip()
+        self.possible_words = [i for i in self.wordlist if unicodedata.normalize('NFKD', self.remove_accents(i)).startswith(input_text)]
+        self.selected_possible_words_index = 0     
 
 
     def render_possible_matches(self, highlight_word=None):
@@ -151,7 +161,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         """
         # Render the possible matches to a temp ImageDraw surface and paste it in
         # BUT render the currently highlighted match as a normal Button element
-
+        
         if not self.possible_words:
             # Clear the right panel
             self.renderer.draw.rectangle(
@@ -340,7 +350,6 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
                     self.text_entry_display.cur_text = ''.join(self.letters)
                     self.text_entry_display.render()
                     self.renderer.show_image()
-
                     return final_selection
 
                 elif input == HardwareButtonsConstants.KEY_PRESS and ret_val in self.possible_alphabet:
@@ -402,7 +411,32 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
                 # Now issue one call to send the pixels to the screen
                 self.renderer.show_image()
 
-
+@dataclass
+class SeedWordsLanguageWarningScreen(WarningEdgesMixin, ButtonListScreen):
+    """
+    Shows a warning when user selects a non-English wordlist for seed entry.
+    """
+    wordlist_language_code: str = None
+    
+    def __post_init__(self):
+        # Get the language name for display
+        from seedsigner.models.settings_definition import SettingsDefinition
+        wordlist_languages_entry = SettingsDefinition.get_settings_entry(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
+        self.language_name = wordlist_languages_entry.get_selection_option_display_name_by_value(self.wordlist_language_code)
+        
+        # Set up styling
+        self.status_color = GUIConstants.WARNING_COLOR
+        self.is_bottom_list = True
+        super().__post_init__()
+        
+        # Add warning text
+        warning_text = _("You've selected the {} wordlist. Some hardware wallets or software may have limited support for non-English seeds.").format(self.language_name)
+        
+        self.components.append(TextArea(
+            text=warning_text,
+            screen_y=self.top_nav.height + GUIConstants.COMPONENT_PADDING,
+            height=self.buttons[0].screen_y - self.top_nav.height - GUIConstants.COMPONENT_PADDING,
+        ))
 
 @dataclass
 class SeedFinalizeScreen(ButtonListScreen):
