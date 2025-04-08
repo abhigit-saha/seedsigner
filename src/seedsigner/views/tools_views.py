@@ -161,7 +161,7 @@ class ToolsImageEntropyMnemonicLengthView(View):
             final_hash = final_hash[:16]
 
         # Generate the mnemonic
-        mnemonic = mnemonic_generation.generate_mnemonic_from_bytes(final_hash)
+        mnemonic = mnemonic_generation.generate_mnemonic_from_bytes(final_hash, self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
 
         # Image should never get saved nor stick around in memory
         seed_entropy_image = None
@@ -432,14 +432,14 @@ class ToolsCalcFinalWordDoneView(View):
         selected_menu_num = ToolsCalcFinalWordDoneScreen(
             final_word=final_word,
             mnemonic_word_length=mnemonic_word_length,
-            fingerprint=self.controller.storage.get_pending_mnemonic_fingerprint(self.settings.get_value(SettingsConstants.SETTING__NETWORK)),
+            fingerprint=self.controller.storage.get_pending_mnemonic_fingerprint(self.settings.get_value(SettingsConstants.SETTING__NETWORK), self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)),
             button_data=button_data,
         ).display()
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
         
-        self.controller.storage.convert_pending_mnemonic_to_pending_seed()
+        self.controller.storage.convert_pending_mnemonic_to_pending_seed(self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
 
         if button_data[selected_menu_num] == self.LOAD:
             return Destination(SeedFinalizeView)
