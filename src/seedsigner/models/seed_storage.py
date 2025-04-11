@@ -40,13 +40,13 @@ class SeedStorage:
             Seed(mnemonic=mnemonic)
         except InvalidSeedException as e:
             return False
-        
+
         return True
 
 
     def num_seeds(self):
         return len(self.seeds)
-    
+
 
     @property
     def pending_mnemonic(self) -> List[str]:
@@ -70,23 +70,26 @@ class SeedStorage:
 
         * may specify a negative `index` (e.g. -1 is the last word).
         """
+
+        print("word in update pending mnemonic function : {}".format(word))
         if index >= len(self._pending_mnemonic):
             raise Exception(f"index {index} is too high")
         self._pending_mnemonic[index] = word
-    
+
 
     def get_pending_mnemonic_word(self, index: int) -> str:
         if index < len(self._pending_mnemonic):
             return self._pending_mnemonic[index]
         return None
-    
 
-    def get_pending_mnemonic_fingerprint(self, network: str = SettingsConstants.MAINNET) -> str:
+
+    def get_pending_mnemonic_fingerprint(self, network: str = SettingsConstants.MAINNET, wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__ENGLISH) -> str:
         try:
             if self._pending_is_electrum:
                 seed = ElectrumSeed(self._pending_mnemonic)
             else:
-                seed = Seed(self._pending_mnemonic)
+                print("Inside get pending mnemonic function, the value of wordlist_language_code : {}".format(wordlist_language_code))
+                seed = Seed(self._pending_mnemonic, wordlist_language_code=wordlist_language_code)
             return seed.get_fingerprint(network)
         except InvalidSeedException:
             return None
@@ -98,7 +101,7 @@ class SeedStorage:
         else:
             self.pending_seed = Seed(self._pending_mnemonic, wordlist_language_code=wordlist_language_code)
         self.discard_pending_mnemonic()
-    
+
 
     def discard_pending_mnemonic(self):
         self._pending_mnemonic = []

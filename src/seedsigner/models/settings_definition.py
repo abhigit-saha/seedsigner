@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Any, List
 
 from seedsigner.helpers.l10n import mark_for_translation as _mft
-from seedsigner.helpers.bip39 import WORDLIST__ENGLISH, WORDLIST__FRENCH, WORDLIST__ITALIAN, WORDLIST__PORTUGUESE, WORDLIST__SPANISH
 
 class SettingsConstants:
     # Basic defaults
@@ -129,7 +128,7 @@ class SettingsConstants:
             return "test"
         if network == SettingsConstants.REGTEST:
             return "regtest"
-    
+
     PERSISTENT_SETTINGS__SD_INSERTED__HELP_TEXT = _mft("Store Settings on SD card")
     PERSISTENT_SETTINGS__SD_REMOVED__HELP_TEXT = _mft("Insert SD card to enable")
 
@@ -173,18 +172,7 @@ class SettingsConstants:
         (WORDLIST_LANGUAGE__PORTUGUESE, "Português"),
         (WORDLIST_LANGUAGE__SPANISH, "Español"),
     ]
-    @classmethod
-    def map_wordlist_language_to_wordlist(cls, wordlist_language_code: str) -> list[str]:
-        supported_languages = {SettingsConstants.WORDLIST_LANGUAGE__ENGLISH: WORDLIST__ENGLISH, 
-                               SettingsConstants.WORDLIST_LANGUAGE__FRENCH:WORDLIST__FRENCH, 
-                               SettingsConstants.WORDLIST_LANGUAGE__ITALIAN: WORDLIST__ITALIAN, 
-                               SettingsConstants.WORDLIST_LANGUAGE__PORTUGUESE: WORDLIST__PORTUGUESE,
-                               SettingsConstants.WORDLIST_LANGUAGE__SPANISH: WORDLIST__SPANISH};
-        if wordlist_language_code in supported_languages:
-            return supported_languages[wordlist_language_code]
-        else:
-            raise Exception(f"Unrecognized wordlist_language_code {wordlist_language_code}")
-        
+
 
 
     # Individual SettingsEntry attr_names
@@ -266,7 +254,7 @@ class SettingsEntry:
         * category: Mostly for organizational purposes when displaying options in the
             SettingsQR UI. Potentially an additional sub-level breakout in the menus
             on the device itself, too.
-        
+
         * selection_options: May be specified as a List(Any) or List(tuple(Any, str)).
             The tuple form is to provide a human-readable display_name. Probably all
             entries should shift to using the tuple form.
@@ -292,7 +280,7 @@ class SettingsEntry:
         elif self.type == SettingsConstants.TYPE__ENABLED_DISABLED_PROMPT_REQUIRED:
             self.selection_options = SettingsConstants.ALL_OPTIONS
 
-        # Account for List[tuple] and tuple formats as default_value        
+        # Account for List[tuple] and tuple formats as default_value
         if type(self.default_value) == list and type(self.default_value[0]) == tuple:
             self.default_value = [v[0] for v in self.default_value]
         elif type(self.default_value) == tuple:
@@ -315,7 +303,7 @@ class SettingsEntry:
             value = value[0]
         return value
 
-    
+
     def get_selection_option_display_name_by_value(self, value) -> str:
         for option in self.selection_options:
             if type(option) == tuple:
@@ -399,13 +387,11 @@ class SettingsDefinition:
                       selection_options=SettingsConstants.ALL_LOCALES,
                       default_value=SettingsConstants.LOCALE__ENGLISH),
 
-        # TODO: Support other bip-39 wordlist languages! Until then, type == HIDDEN
         SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
                       attr_name=SettingsConstants.SETTING__WORDLIST_LANGUAGE,
                       abbreviated_name="wordlist_lang",
                       display_name=_mft("Mnemonic language"),
                       type=SettingsConstants.TYPE__SELECT_1,
-                    #   visibility=SettingsConstants.VISIBILITY__HIDDEN,
                       selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
                       default_value=SettingsConstants.WORDLIST_LANGUAGE__ENGLISH),
 
@@ -436,7 +422,7 @@ class SettingsDefinition:
                       type=SettingsConstants.TYPE__SELECT_1,
                       selection_options=SettingsConstants.ALL_BTC_DENOMINATIONS,
                       default_value=SettingsConstants.BTC_DENOMINATION__THRESHOLD),
-     
+
 
         # Advanced options
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
@@ -563,7 +549,7 @@ class SettingsDefinition:
         #               display_name="Debug",
         #               visibility=SettingsConstants.VISIBILITY__DEVELOPER,
         #               default_value=SettingsConstants.OPTION__DISABLED),
-        
+
         # "Hidden" settings with no UI interaction
         SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
                       attr_name=SettingsConstants.SETTING__QR_BRIGHTNESS,
@@ -582,7 +568,7 @@ class SettingsDefinition:
             if entry.visibility == visibility:
                 entries.append(entry)
         return entries
-    
+
 
     @classmethod
     def get_settings_entry(cls, attr_name) -> SettingsEntry:
@@ -618,7 +604,7 @@ class SettingsDefinition:
         }
         for settings_entry in cls.settings_entries:
             output["settings_entries"].append(settings_entry.to_dict())
-        
+
         return output
 
 
@@ -628,11 +614,11 @@ if __name__ == "__main__":
     import os
 
     hostname = os.uname()[1]
-  
+
     if hostname == "seedsigner-os":
         output_file = "/mnt/microsd/settings_definition.json"
     else:
         output_file = "settings_definition.json"
-    
+
     with open(output_file, 'w') as json_file:
         json.dump(SettingsDefinition.to_dict(), json_file, indent=4)

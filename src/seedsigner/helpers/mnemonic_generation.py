@@ -7,7 +7,7 @@ from seedsigner.models.seed import Seed
 
 """
     This is SeedSigner's internal mnemonic generation utility.
-     
+
     It can also be run as an independently-executable CLI to facilitate external
     verification of SeedSigner's results for a given input entropy.
 
@@ -28,18 +28,20 @@ def calculate_checksum(mnemonic: list | str, wordlist_language_code: str = Setti
         If 11- or 23-words are provided, append word `0000` to end of list as temp final
         word.
     """
+
+    wordlist = Seed.get_wordlist(wordlist_language_code)
     if type(mnemonic) == str:
         import re
         # split on commas or spaces
         mnemonic = re.findall(r'[^,\s]+', mnemonic)
 
     if len(mnemonic) in [11, 23]:
-        temp_final_word = Seed.get_wordlist(wordlist_language_code)[0]
+        temp_final_word = wordlist[0]
         mnemonic.append(temp_final_word)
 
     if len(mnemonic) not in [12, 24]:
         raise Exception("Pass in a 12- or 24-word mnemonic")
-    
+
     # Work on a copy of the input list
     mnemonic_copy = mnemonic.copy()
 
@@ -52,7 +54,7 @@ def calculate_checksum(mnemonic: list | str, wordlist_language_code: str = Setti
     # calculate the proper checksum bits while doing so. For a 12-word seed it will just
     # overwrite the last 4 bits from the above result with the checksum; for a 24-word
     # seed it'll overwrite the last 8 bits.
-    return bip39.mnemonic_from_bytes(mnemonic_bytes).split()
+    return bip39.mnemonic_from_bytes(mnemonic_bytes, wordlist).split()
 
 
 

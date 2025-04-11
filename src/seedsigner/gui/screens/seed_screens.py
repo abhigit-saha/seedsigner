@@ -27,10 +27,10 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
     initial_letters: list = None
     wordlist: list = None
     possible_alphabet: str = None
-    
+
     def __post_init__(self):
         super().__post_init__()
-        
+
         # Set up the keyboard params
         self.keyboard_width = 128
         text_entry_display_y = self.top_nav.height
@@ -124,9 +124,10 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
     def remove_accents(self, text):
         import unicodedata
         return ''.join(
-            c for c in unicodedata.normalize('NFKD', text) 
-            if unicodedata.category(c) != 'Mn'
+            c for c in unicodedata.normalize('NFKD', text)
+            if not unicodedata.combining(c)
         )
+
     def calc_possible_alphabet(self, new_letter = False):
         if (self.letters and len(self.letters) > 1 and new_letter == False) or (len(self.letters) > 0 and new_letter == True):
             search_letters = self.letters[:]
@@ -139,8 +140,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             for word in self.possible_words:
                 word = self.remove_accents(word);
                 if len(word)-1 >= letter_num:
-                    # possible_letter = unicodedata.normalize('NFKD', word[letter_num]);
-                    possible_letters.append(word[letter_num]) #TODO: here convert accented letters to normal letters.
+                    possible_letters.append(word[letter_num])
             # remove duplicates and keep order
             self.possible_alphabet = list(dict.fromkeys(possible_letters))[:]
         else:
@@ -152,7 +152,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         import unicodedata
         input_text = "".join(self.letters).strip()
         self.possible_words = [i for i in self.wordlist if unicodedata.normalize('NFKD', self.remove_accents(i)).startswith(input_text)]
-        self.selected_possible_words_index = 0     
+        self.selected_possible_words_index = 0
 
 
     def render_possible_matches(self, highlight_word=None):
@@ -161,7 +161,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         """
         # Render the possible matches to a temp ImageDraw surface and paste it in
         # BUT render the currently highlighted match as a normal Button element
-        
+
         if not self.possible_words:
             # Clear the right panel
             self.renderer.draw.rectangle(
@@ -295,7 +295,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
                         self.calc_possible_alphabet()
                         self.keyboard.update_active_keys(active_keys=self.possible_alphabet)
                         self.keyboard.render_keys()
-                            
+
                         # Update the right-hand possible matches area
                         self.render_possible_matches()
 
@@ -396,7 +396,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
                         self.letters = self.letters[:-1]
                         self.letters.append(ret_val)
                         self.calc_possible_words()  # live update our matches as we move
-                    
+
                     else:
                         # We've navigated to a deactivated letter
                         pass
@@ -417,21 +417,21 @@ class SeedWordsLanguageWarningScreen(WarningEdgesMixin, ButtonListScreen):
     Shows a warning when user selects a non-English wordlist for seed entry.
     """
     wordlist_language_code: str = None
-    
+
     def __post_init__(self):
         # Get the language name for display
         from seedsigner.models.settings_definition import SettingsDefinition
         wordlist_languages_entry = SettingsDefinition.get_settings_entry(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
         self.language_name = wordlist_languages_entry.get_selection_option_display_name_by_value(self.wordlist_language_code)
-        
+
         # Set up styling
         self.status_color = GUIConstants.WARNING_COLOR
         self.is_bottom_list = True
         super().__post_init__()
-        
+
         # Add warning text
         warning_text = _("You've selected the {} wordlist. Some hardware wallets or software may have limited support for non-English seeds.").format(self.language_name)
-        
+
         self.components.append(TextArea(
             text=warning_text,
             screen_y=self.top_nav.height + GUIConstants.COMPONENT_PADDING,
@@ -894,7 +894,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         elif self.initial_keyboard == self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT:
             cur_keyboard = self.keyboard_symbols_2
             self.hw_button2.text = self.KEYBOARD__DIGITS_BUTTON_TEXT
-        
+
         else:
             cur_keyboard = self.keyboard_abc
 
@@ -1072,11 +1072,11 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                     # Leave current spot blank for now. Only update the active keyboard keys
                     # when a selection has been locked in (KEY_PRESS) or removed ("del").
                     pass
-            
+
                 if keyboard_swap:
                     # Show the hw buttons' updated text and not active state
                     self.hw_button1.text = cur_button1_text
-                    self.hw_button2.text = cur_button2_text                
+                    self.hw_button2.text = cur_button2_text
                     self.hw_button1.is_selected = False
                     self.hw_button2.is_selected = False
                     self.hw_button1.render()
@@ -1130,7 +1130,7 @@ class SeedReviewPassphraseScreen(ButtonListScreen):
                 passphrase = []
                 for i in range(0, len(self.passphrase), chars_per_line):
                     passphrase.append(self.passphrase[i:i+chars_per_line])
-                
+
                 # See if it fits in this configuration
                 if char_width * len(passphrase[0]) <= self.canvas_width - 2*GUIConstants.EDGE_PADDING:
                     # Width is good...
@@ -1489,7 +1489,7 @@ class SeedAddressVerificationScreen(ButtonListScreen):
             threadsafe_counter=self.threadsafe_counter,
             verified_index=self.verified_index,
         ))
-    
+
 
     def _run_callback(self):
         # Exit the screen on success via a non-None value.
@@ -1497,7 +1497,7 @@ class SeedAddressVerificationScreen(ButtonListScreen):
         if self.verified_index.cur_count is not None:
             # Note that the ProgressThread will have already exited on its own.
 
-            # Return a success value (anything other than None) to end the 
+            # Return a success value (anything other than None) to end the
             # ButtonListScreen._run() loop.
             return 1
 
@@ -1509,7 +1509,7 @@ class SeedAddressVerificationScreen(ButtonListScreen):
             self.threadsafe_counter = threadsafe_counter
             self.verified_index = verified_index
             super().__init__()
-        
+
 
         def run(self):
             while self.keep_running:

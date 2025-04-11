@@ -68,7 +68,7 @@ class ToolsImageEntropyLivePreviewView(View):
 
         if ret == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
-        
+
         self.controller.image_entropy_preview_frames = ret
         return Destination(ToolsImageEntropyFinalImageView)
 
@@ -99,7 +99,7 @@ class ToolsImageEntropyFinalImageView(View):
         ).resize(
             (self.canvas_width, self.canvas_height), Image.Resampling.BICUBIC
         )
-        
+
         ret = ToolsImageEntropyFinalImageScreen(
             final_image=display_version
         ).display()
@@ -108,7 +108,7 @@ class ToolsImageEntropyFinalImageView(View):
             # Go back to live preview and reshoot
             self.controller.image_entropy_final_image = None
             return Destination(BackStackView)
-        
+
         return Destination(ToolsImageEntropyMnemonicLengthView)
 
 
@@ -127,7 +127,7 @@ class ToolsImageEntropyMnemonicLengthView(View):
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
-        
+
         mnemonic_length = button_data[selected_menu_num].return_data
 
         preview_images = self.controller.image_entropy_preview_frames
@@ -161,7 +161,7 @@ class ToolsImageEntropyMnemonicLengthView(View):
             final_hash = final_hash[:16]
 
         # Generate the mnemonic
-        mnemonic = mnemonic_generation.generate_mnemonic_from_bytes(final_hash)
+        mnemonic = mnemonic_generation.generate_mnemonic_from_bytes(final_hash, self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
 
         # Image should never get saved nor stick around in memory
         seed_entropy_image = None
@@ -172,9 +172,10 @@ class ToolsImageEntropyMnemonicLengthView(View):
         self.controller.image_entropy_final_image = None
 
         # Add the mnemonic as an in-memory Seed
+        print("Seed called inside ToolsImageEntropyMnemonicLengthView")
         seed = Seed(mnemonic, wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
         self.controller.storage.set_pending_seed(seed)
-        
+
         # Cannot return BACK to this View
         return Destination(SeedWordsWarningView, view_args={"seed_num": None}, clear_history=True)
 
@@ -219,8 +220,8 @@ class ToolsDiceEntropyEntryView(View):
     def __init__(self, total_rolls: int):
         super().__init__()
         self.total_rolls = total_rolls
-    
-    
+
+
     def run(self):
         from seedsigner.gui.screens.tools_screens import ToolsDiceEntropyEntryScreen
         ret = ToolsDiceEntropyEntryScreen(
@@ -229,12 +230,13 @@ class ToolsDiceEntropyEntryView(View):
 
         if ret == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
-        
+
         wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
-        
+
         dice_seed_phrase = mnemonic_generation.generate_mnemonic_from_dice(ret, wordlist_language_code=wordlist_language_code)
 
         # Add the mnemonic as an in-memory Seed
+        print("Seed called inside ToolsDiceEntropyEntryView")
         seed = Seed(dice_seed_phrase, wordlist_language_code=wordlist_language_code)
         self.controller.storage.set_pending_seed(seed)
 
@@ -325,14 +327,14 @@ class ToolsCalcFinalWordCoinFlipsView(View):
             total_flips = 7
         else:
             total_flips = 3
-        
+
         ret_val = ToolsCoinFlipEntryScreen(
             return_after_n_chars=total_flips,
         ).display()
 
         if ret_val == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
-        
+
         else:
             return Destination(ToolsCalcFinalWordShowFinalWordView, view_args=dict(coin_flips=ret_val))
 
@@ -348,10 +350,10 @@ class ToolsCalcFinalWordShowFinalWordView(View):
         #   * 3 bits to a 24-word seed (plus 8-bit checksum)
         #   * 7 bits to a 12-word seed (plus 4-bit checksum)
         from seedsigner.helpers import mnemonic_generation
-        
+
         wordlist_language_code = self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
         wordlist = Seed.get_wordlist(wordlist_language_code)
-
+        logger.info("SELECTED WORDLIST LANGUAGE: {}".format(wordlist_language_code))
         # Prep the user's selected word / coin flips and the actual final word for
         # the display.
         if coin_flips:
@@ -369,8 +371,10 @@ class ToolsCalcFinalWordShowFinalWordView(View):
             # retrieve the matching word for the resulting index
             wordlist_index = int(binary_string, 2)
             wordlist = Seed.get_wordlist(self.controller.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
+            print("FIRST WORD OF THE WORDLIST: ", wordlist[0])
             word = wordlist[wordlist_index]
-
+            print("SETTINGS WORDLIST LANGUAGE: {}".format(self.controller.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)))
+            print("FINAL WORD: {}".format(word))
             # update the pending mnemonic with our new "final" (pre-checksum) word
             self.controller.storage.update_pending_mnemonic(word, -1)
 
@@ -380,6 +384,7 @@ class ToolsCalcFinalWordShowFinalWordView(View):
             wordlist_language_code=wordlist_language_code,
         )
 
+        print("FINAL MNEMONIC: ", final_mnemonic)
         # Update our pending mnemonic with the real final word
         self.controller.storage.update_pending_mnemonic(final_mnemonic[-1], -1)
 
@@ -389,6 +394,7 @@ class ToolsCalcFinalWordShowFinalWordView(View):
         # And grab the actual final word's checksum bits
         self.actual_final_word = self.controller.storage.pending_mnemonic[-1]
         num_checksum_bits = 4 if mnemonic_length == 12 else 8
+        print("ACTUAL FINAL WORD: ", self.actual_final_word)
         self.checksum_bits = format(wordlist.index(self.actual_final_word), '011b')[-num_checksum_bits:]
 
 
@@ -421,29 +427,30 @@ class ToolsCalcFinalWordDoneView(View):
     LOAD = ButtonOption("Load seed")
     DISCARD = ButtonOption("Discard", button_label_color="red")
 
+
     def run(self):
         from seedsigner.gui.screens.tools_screens import ToolsCalcFinalWordDoneScreen
         mnemonic = self.controller.storage.pending_mnemonic
         mnemonic_word_length = len(mnemonic)
         final_word = mnemonic[-1]
-
+        wordlist_language_code= self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
         button_data = [self.LOAD, self.DISCARD]
 
         selected_menu_num = ToolsCalcFinalWordDoneScreen(
             final_word=final_word,
             mnemonic_word_length=mnemonic_word_length,
-            fingerprint=self.controller.storage.get_pending_mnemonic_fingerprint(self.settings.get_value(SettingsConstants.SETTING__NETWORK)),
+            fingerprint=self.controller.storage.get_pending_mnemonic_fingerprint(self.settings.get_value(SettingsConstants.SETTING__NETWORK),wordlist_language_code),
             button_data=button_data,
         ).display()
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
-        
-        self.controller.storage.convert_pending_mnemonic_to_pending_seed()
+
+        self.controller.storage.convert_pending_mnemonic_to_pending_seed(wordlist_language_code)
 
         if button_data[selected_menu_num] == self.LOAD:
             return Destination(SeedFinalizeView)
-        
+
         elif button_data[selected_menu_num] == self.DISCARD:
             return Destination(SeedDiscardView)
 
@@ -484,7 +491,7 @@ class ToolsAddressExplorerSelectSourceView(View):
 
         # Most of the options require us to go through a side flow(s) before we can
         # continue to the address explorer. Set the Controller-level flow so that it
-        # knows to re-route us once the side flow is complete.        
+        # knows to re-route us once the side flow is complete.
         self.controller.resume_main_flow = Controller.FLOW__ADDRESS_EXPLORER
 
         if len(seeds) > 0 and selected_menu_num < len(seeds):
@@ -536,7 +543,7 @@ class ToolsAddressExplorerAddressTypeView(View):
         self.seed_num = seed_num
         self.script_type = script_type
         self.custom_derivation = custom_derivation
-    
+
         network = self.settings.get_value(SettingsConstants.SETTING__NETWORK)
 
         # Store everything in the Controller's `address_explorer_data` so we don't have
@@ -566,7 +573,7 @@ class ToolsAddressExplorerAddressTypeView(View):
 
             data["derivation_path"] = derivation_path
             data["xpub"] = self.seed.get_xpub(derivation_path, network=network)
-        
+
         else:
             data["wallet_descriptor"] = self.controller.multisig_wallet_descriptor
 
@@ -597,7 +604,7 @@ class ToolsAddressExplorerAddressTypeView(View):
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             # If we entered this flow via an already-loaded seed's SeedOptionsView, we
-            # need to clear the `resume_main_flow` so that we don't get stuck in a 
+            # need to clear the `resume_main_flow` so that we don't get stuck in a
             # SeedOptionsView redirect loop.
             # TODO: Refactor to a cleaner `BackStack.get_previous_View_cls()`
             if len(self.controller.back_stack) > 1 and self.controller.back_stack[-2].View_cls == SeedOptionsView:
@@ -605,7 +612,7 @@ class ToolsAddressExplorerAddressTypeView(View):
                 self.controller.resume_main_flow = None
                 self.controller.address_explorer_data = None
             return Destination(BackStackView)
-        
+
         elif button_data[selected_menu_num] in [self.RECEIVE, self.CHANGE]:
             return Destination(ToolsAddressExplorerAddressListView, view_args=dict(is_change=button_data[selected_menu_num] == self.CHANGE))
 
@@ -705,11 +712,11 @@ class ToolsAddressExplorerAddressListView(View):
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
-        
+
         if selected_menu_num == len(addresses):
             # User clicked NEXT
             return Destination(ToolsAddressExplorerAddressListView, view_args=dict(is_change=self.is_change, start_index=self.start_index + addrs_per_screen))
-        
+
         # Preserve the list's current scroll so we can return to the same spot
         initial_scroll = self.screen.buttons[0].scroll_y
 
@@ -728,7 +735,7 @@ class ToolsAddressExplorerAddressView(View):
         self.start_index = start_index
         self.parent_initial_scroll = parent_initial_scroll
 
-    
+
     def run(self):
         from seedsigner.gui.screens.screen import QRDisplayScreen
         from seedsigner.models.encode_qr import GenericStaticQrEncoder
@@ -738,6 +745,6 @@ class ToolsAddressExplorerAddressView(View):
             QRDisplayScreen,
             qr_encoder=qr_encoder,
         )
-    
+
         # Exiting/Cancelling the QR display screen always returns to the list
         return Destination(ToolsAddressExplorerAddressListView, view_args=dict(is_change=self.is_change, start_index=self.start_index, selected_button_index=self.index - self.start_index, initial_scroll=self.parent_initial_scroll), skip_current_view=True)
