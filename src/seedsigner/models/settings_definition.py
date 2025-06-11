@@ -161,15 +161,17 @@ class SettingsConstants:
     WORDLIST_LANGUAGE__JAPANESE = "jp"
     WORDLIST_LANGUAGE__KOREAN = "kr"
     WORDLIST_LANGUAGE__PORTUGUESE = "pt"
+    WORDLIST_LANGUAGE__SPANISH = "es"
     ALL_WORDLIST_LANGUAGES = [
         (WORDLIST_LANGUAGE__ENGLISH, "English"),
         # (WORDLIST_LANGUAGE__CHINESE_SIMPLIFIED, "简体中文"),
         # (WORDLIST_LANGUAGE__CHINESE_TRADITIONAL, "繁體中文"),
-        # (WORDLIST_LANGUAGE__FRENCH, "Français"),
-        # (WORDLIST_LANGUAGE__ITALIAN, "Italiano"),
+        (WORDLIST_LANGUAGE__FRENCH, "Français"),
+        (WORDLIST_LANGUAGE__ITALIAN, "Italiano"),
         # (WORDLIST_LANGUAGE__JAPANESE, "日本語"),
         # (WORDLIST_LANGUAGE__KOREAN, "한국어"),
-        # (WORDLIST_LANGUAGE__PORTUGUESE, "Português"),
+        (WORDLIST_LANGUAGE__PORTUGUESE, "Português"),
+        (WORDLIST_LANGUAGE__SPANISH, "Español"),
     ]
 
     
@@ -385,13 +387,11 @@ class SettingsDefinition:
                       selection_options=SettingsConstants.ALL_LOCALES,
                       default_value=SettingsConstants.LOCALE__ENGLISH),
 
-        # TODO: Support other bip-39 wordlist languages! Until then, type == HIDDEN
         SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
                       attr_name=SettingsConstants.SETTING__WORDLIST_LANGUAGE,
                       abbreviated_name="wordlist_lang",
                       display_name=_mft("Mnemonic language"),
                       type=SettingsConstants.TYPE__SELECT_1,
-                      visibility=SettingsConstants.VISIBILITY__HIDDEN,
                       selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
                       default_value=SettingsConstants.WORDLIST_LANGUAGE__ENGLISH),
 

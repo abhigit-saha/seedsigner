@@ -3,6 +3,7 @@ import random
 import time
 
 from binascii import hexlify
+from dataclasses import dataclass
 from gettext import gettext as _
 
 from embit.descriptor import Descriptor
@@ -174,7 +175,8 @@ class LoadSeedView(View):
 
         if self.settings.get_value(SettingsConstants.SETTING__ELECTRUM_SEEDS) == SettingsConstants.OPTION__ENABLED:
             button_data.append(self.TYPE_ELECTRUM)
-        
+        wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
+
         button_data.append(self.CREATE)
 
         selected_menu_num = self.run_screen(
@@ -193,11 +195,17 @@ class LoadSeedView(View):
         
         elif button_data[selected_menu_num] == self.TYPE_12WORD:
             self.controller.storage.init_pending_mnemonic(num_words=12)
-            return Destination(SeedMnemonicEntryView)
+            if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__ENGLISH:
+                return Destination(SeedMnemonicEntryView)
+            else:
+                return Destination(SeedWordlistLanguageWarningView, view_args=dict(wordlist_language_code=wordlist_language_code))
 
         elif button_data[selected_menu_num] == self.TYPE_24WORD:
             self.controller.storage.init_pending_mnemonic(num_words=24)
-            return Destination(SeedMnemonicEntryView)
+            if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__ENGLISH:
+                return Destination(SeedMnemonicEntryView)
+            else:
+                return Destination(SeedWordlistLanguageWarningView)
 
         elif button_data[selected_menu_num] == self.TYPE_ELECTRUM:
             return Destination(SeedElectrumMnemonicStartView)
@@ -206,7 +214,30 @@ class LoadSeedView(View):
             from .tools_views import ToolsMenuView
             return Destination(ToolsMenuView)
 
+@dataclass
+class SeedWordlistLanguageWarningView(View):
+    wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__ENGLISH
 
+    def run(self):
+
+        wordlist_languages_entry = SettingsDefinition.get_settings_entry(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
+        language_name = wordlist_languages_entry.get_selection_option_display_name_by_value(self.wordlist_language_code)
+
+        selected_menu_num = WarningScreen(
+            title=_("Non-English Wordlist"),
+            status_headline=None,
+            text=_("You have selected the a non-english wordlist ({}). Some wallets may not support this.".format(language_name)),
+            button_data=[ButtonOption("Continue")],
+        ).display()
+
+        if selected_menu_num == RET_CODE__BACK_BUTTON:
+            return Destination(BackStackView)
+
+        # Only one exit point
+        return Destination(
+            SeedMnemonicEntryView,
+            skip_current_view=True,  # Prevent going BACK to WarningViews
+        )
 
 class SeedMnemonicEntryView(View):
     def __init__(self, cur_word_index: int = 0, is_calc_final_word: bool=False):
@@ -223,6 +254,8 @@ class SeedMnemonicEntryView(View):
             title=_("Seed Word #{}").format(self.cur_word_index + 1),  # Human-readable 1-indexing!
             initial_letters=list(self.cur_word) if self.cur_word else ["a"],
             wordlist=Seed.get_wordlist(wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)),
+            #TODO: add a standardized way to get the possible alphabet
+            possible_alphabet=_("abcdefghijklmnopqrstuvwxyz"),
         )
 
         if ret == RET_CODE__BACK_BUTTON:
@@ -259,7 +292,8 @@ class SeedMnemonicEntryView(View):
             # Attempt to finalize the mnemonic
             from seedsigner.models.seed import InvalidSeedException
             try:
-                self.controller.storage.convert_pending_mnemonic_to_pending_seed()
+                wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
+                self.controller.storage.convert_pending_mnemonic_to_pending_seed(wordlist_language_code)
             except InvalidSeedException:
                 return Destination(SeedMnemonicInvalidView)
 
