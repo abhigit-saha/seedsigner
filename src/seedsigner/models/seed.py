@@ -23,7 +23,7 @@ class Seed:
     def __init__(self,
                  mnemonic: List[str] = None,
                  passphrase: str = "",
-                 wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__ENGLISH) -> None:
+                 wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN) -> None:
         self._wordlist_language_code = wordlist_language_code
 
         if not mnemonic:
@@ -38,7 +38,7 @@ class Seed:
 
 
     @staticmethod
-    def get_wordlist(wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__ENGLISH) -> List[str]:
+    def get_wordlist(wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN) -> List[str]:
         return get_bip39_wordlist(wordlist_language_code)
 
 

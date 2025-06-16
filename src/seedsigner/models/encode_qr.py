@@ -86,7 +86,7 @@ class BaseStaticQrEncoder(BaseQrEncoder):
 @dataclass
 class SeedQrEncoder(BaseStaticQrEncoder):
     mnemonic: List[str] = None
-    wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__ENGLISH
+    wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN
 
 
     def __post_init__(self):

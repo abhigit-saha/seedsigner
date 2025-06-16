@@ -293,25 +293,22 @@ class SettingsConstants:
         (CUSTOM_DERIVATION, _mft("Custom Derivation")),
     ]
 
-    WORDLIST_LANGUAGE__ENGLISH = "en"
-    WORDLIST_LANGUAGE__CHINESE_SIMPLIFIED = "zh_Hans_CN"
-    WORDLIST_LANGUAGE__CHINESE_TRADITIONAL = "zh_Hant_TW"
-    WORDLIST_LANGUAGE__FRENCH = "fr"
-    WORDLIST_LANGUAGE__ITALIAN = "it"
-    WORDLIST_LANGUAGE__JAPANESE = "jp"
-    WORDLIST_LANGUAGE__KOREAN = "kr"
-    WORDLIST_LANGUAGE__PORTUGUESE = "pt"
-    WORDLIST_LANGUAGE__SPANISH = "es"
+    WORDLIST_LANGUAGE__EN = "en"
+    WORDLIST_LANGUAGE__ES = "es"
+    WORDLIST_LANGUAGE__FR = "fr"
+    WORDLIST_LANGUAGE__IT = "it"
+    WORDLIST_LANGUAGE__PT = "pt"
+    WORDLIST_LANGUAGE__ZH_HANS_CN = "zh_Hans_CN"
+    WORDLIST_LANGUAGE__ZH_HANT_TW = "zh_Hant_TW"
+
     ALL_WORDLIST_LANGUAGES = [
-        (WORDLIST_LANGUAGE__ENGLISH, "English"),
-        # (WORDLIST_LANGUAGE__CHINESE_SIMPLIFIED, "简体中文"),
-        # (WORDLIST_LANGUAGE__CHINESE_TRADITIONAL, "繁體中文"),
-        (WORDLIST_LANGUAGE__FRENCH, "Français"),
-        (WORDLIST_LANGUAGE__ITALIAN, "Italiano"),
-        # (WORDLIST_LANGUAGE__JAPANESE, "日本語"),
-        # (WORDLIST_LANGUAGE__KOREAN, "한국어"),
-        (WORDLIST_LANGUAGE__PORTUGUESE, "Português"),
-        (WORDLIST_LANGUAGE__SPANISH, "Español"),
+        (WORDLIST_LANGUAGE__EN, "English"),
+        (WORDLIST_LANGUAGE__ES, "Español"),
+        (WORDLIST_LANGUAGE__FR, "Français"),
+        (WORDLIST_LANGUAGE__IT, "Italiano"),
+        (WORDLIST_LANGUAGE__PT, "Português"),
+        # (WORDLIST_LANGUAGE__ZH_HANS_CN, "简体中文"),
+        # (WORDLIST_LANGUAGE__ZH_HANT_TW, "繁體中文"),
     ]
 
     # Individual SettingsEntry attr_names
@@ -550,7 +547,7 @@ class SettingsDefinition:
                       display_name=_mft("Mnemonic language"),
                       type=SettingsConstants.TYPE__SELECT_1,
                       selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
-                      default_value=SettingsConstants.WORDLIST_LANGUAGE__ENGLISH),
+                      default_value=SettingsConstants.WORDLIST_LANGUAGE__EN),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
                       attr_name=SettingsConstants.SETTING__PERSISTENT_SETTINGS,
