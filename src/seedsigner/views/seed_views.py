@@ -205,8 +205,10 @@ class LoadSeedView(View):
             if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__EN:
                 return Destination(SeedMnemonicEntryView)
             else:
-                return Destination(SeedWordlistLanguageWarningView)
-
+                return Destination(
+                    SeedWordlistLanguageWarningView,
+                    view_args=dict(wordlist_language_code=wordlist_language_code)
+                )
         elif button_data[selected_menu_num] == self.TYPE_ELECTRUM:
             return Destination(SeedElectrumMnemonicStartView)
 
