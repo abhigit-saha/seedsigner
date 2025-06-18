@@ -23,7 +23,7 @@ def get_bip39_wordlist(wordlist_language_code: str) -> list:
         case _:
             raise ValueError(f"Unsupported language code: {wordlist_language_code}")
 
-def get_possible_alphabet(wordlist_language_code: str) -> list: 
+def get_possible_alphabet(wordlist_language_code: str) -> str: 
     if wordlist_language_code in [SettingsConstants.WORDLIST_LANGUAGE__EN, SettingsConstants.WORDLIST_LANGUAGE__ES, SettingsConstants.WORDLIST_LANGUAGE__FR, SettingsConstants.WORDLIST_LANGUAGE__IT, SettingsConstants.WORDLIST_LANGUAGE__PT]:
         return "abcdefghijklmnopqrstuvwxyz"
     else: 

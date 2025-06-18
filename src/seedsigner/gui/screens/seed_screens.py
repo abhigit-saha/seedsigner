@@ -33,8 +33,6 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
     def __post_init__(self):
         super().__post_init__()
 
-        self.possible_alphabet = get_possible_alphabet(self.wordlist_language_code)
-
         # Measure the width required to display the longest word in the English bip39
         # wordlist.
         # TODO: If we ever support other wordlist languages, adjust accordingly.
@@ -95,7 +93,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         self.highlighted_row_y = int((self.canvas_height - GUIConstants.BUTTON_HEIGHT)/2)
 
         self.matches_list_highlight_button = Button(
-            text="abcdefghijklmnopqrstuvwxyz",
+            text=self.possible_alphabet,
             is_text_centered=False,
             font_name=GUIConstants.FIXED_WIDTH_EMPHASIS_FONT_NAME,
             font_size=GUIConstants.get_button_font_size() + 4,
@@ -127,9 +125,9 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             width=arrow_button_width,
             height=arrow_button_height,
         )
-
+        logging.debug("random logging")
         self.word_font = Fonts.get_font(GUIConstants.FIXED_WIDTH_EMPHASIS_FONT_NAME, GUIConstants.get_button_font_size() + 4)
-        (left, top, right, bottom) = self.word_font.getbbox("abcdefghijklmnopqrstuvwxyz", anchor="ls")
+        (left, top, right, bottom) = self.word_font.getbbox(self.possible_alphabet, anchor="ls")
         self.word_font_height = -1 * top
         self.matches_list_row_height = self.word_font_height + GUIConstants.COMPONENT_PADDING
 
@@ -154,8 +152,9 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
                 word = self.remove_accents(word);
                 if len(word)-1 >= letter_num:
                     possible_letters.append(word[letter_num])
-            # remove duplicates and keep order
-            self.possible_alphabet = list(dict.fromkeys(possible_letters))[:]
+            # remove duplicates and keep order 
+            logger.debug(f"Possible letters for {self.wordlist_language_code} wordlist: {possible_letters}") 
+            self.possible_alphabet = ''.join(dict.fromkeys(possible_letters))
         else:
             self.possible_alphabet = get_possible_alphabet(self.wordlist_language_code)
             self.possible_words = []
