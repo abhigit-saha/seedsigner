@@ -37,9 +37,7 @@ class Seed:
         self._generate_seed()
 
 
-    @staticmethod
-    def get_wordlist(wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN) -> List[str]:
-        return get_bip39_wordlist(wordlist_language_code)
+
 
 
     def _generate_seed(self):
@@ -105,7 +103,7 @@ class Seed:
 
     @property
     def wordlist(self) -> List[str]:
-        return Seed.get_wordlist(self.wordlist_language_code)
+        return get_bip39_wordlist(self.wordlist_language_code)
 
 
     def set_wordlist_language_code(self, language_code: str):

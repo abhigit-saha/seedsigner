@@ -10,6 +10,7 @@ from seedsigner.gui.screens import RET_CODE__BACK_BUTTON, ButtonListScreen
 from seedsigner.gui.screens.screen import ButtonOption
 from seedsigner.helpers import mnemonic_generation
 from seedsigner.models.seed import Seed
+from seedsigner.helpers.bip39 import get_bip39_wordlist
 from seedsigner.models.settings_definition import SettingsConstants
 from seedsigner.views.seed_views import SeedDiscardView, SeedFinalizeView, SeedMnemonicEntryView, SeedOptionsView, SeedWordsWarningView, SeedExportXpubScriptTypeView
 
@@ -315,7 +316,7 @@ class ToolsCalcFinalWordFinalizePromptView(View):
             # User skipped the option to select a final word to provide last bits of
             # entropy. We'll insert all zeros and piggy-back on the coin flip attr
             wordlist_language_code = self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
-            self.controller.storage.update_pending_mnemonic(Seed.get_wordlist(wordlist_language_code)[0], mnemonic_length - 1)
+            self.controller.storage.update_pending_mnemonic(get_bip39_wordlist(wordlist_language_code)[0], mnemonic_length - 1)
             return Destination(ToolsCalcFinalWordShowFinalWordView, view_args=dict(coin_flips="0" * num_entropy_bits))
 
 
@@ -354,7 +355,7 @@ class ToolsCalcFinalWordShowFinalWordView(View):
         from seedsigner.helpers import mnemonic_generation
 
         wordlist_language_code = self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
-        wordlist = Seed.get_wordlist(wordlist_language_code)
+        wordlist = get_bip39_wordlist(wordlist_language_code)
 
         # Prep the user's selected word / coin flips and the actual final word for
         # the display.
@@ -372,7 +373,7 @@ class ToolsCalcFinalWordShowFinalWordView(View):
 
             # retrieve the matching word for the resulting index
             wordlist_index = int(binary_string, 2)
-            wordlist = Seed.get_wordlist(self.controller.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
+            wordlist = get_bip39_wordlist(self.controller.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
             word = wordlist[wordlist_index]
 
             # update the pending mnemonic with our new "final" (pre-checksum) word
