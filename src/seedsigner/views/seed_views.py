@@ -12,7 +12,7 @@ from seedsigner.gui.components import FontAwesomeIconConstants, SeedSignerIconCo
 from seedsigner.gui.screens import (RET_CODE__BACK_BUTTON, ButtonListScreen,
     WarningScreen, DireWarningScreen, seed_screens)
 from seedsigner.gui.screens.screen import ButtonOption
-from seedsigner.helpers.bip39 import get_bip39_wordlist
+from seedsigner.helpers.bip39.utils import get_bip39_wordlist, get_possible_alphabet
 from seedsigner.models.encode_qr import CompactSeedQrEncoder, GenericStaticQrEncoder, SeedQrEncoder, SpecterXPubQrEncoder, StaticXpubQrEncoder, UrXpubQrEncoder
 from seedsigner.models.qr_type import QRType
 from seedsigner.models.seed import Seed
@@ -251,14 +251,15 @@ class SeedMnemonicEntryView(View):
 
 
     def run(self):
+        wordlist_language_code = self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
         ret = self.run_screen(
             seed_screens.SeedMnemonicEntryScreen,
             # TRANSLATOR_NOTE: Inserts the word number (e.g. "Seed Word #6")
             title=_("Seed Word #{}").format(self.cur_word_index + 1),  # Human-readable 1-indexing!
             initial_letters=list(self.cur_word) if self.cur_word else ["a"],
-                        wordlist=get_bip39_wordlist(wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)),
-            #TODO: add a standardized way to get the possible alphabet
-            possible_alphabet=_("abcdefghijklmnopqrstuvwxyz"),
+            wordlist=get_bip39_wordlist(wordlist_language_code=wordlist_language_code),
+            possible_alphabet=get_possible_alphabet(wordlist_language_code),
+            wordlist_language_code=wordlist_language_code,
         )
 
         if ret == RET_CODE__BACK_BUTTON:

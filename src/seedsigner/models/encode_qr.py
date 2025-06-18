@@ -11,7 +11,7 @@ from embit.psbt import PSBT
 from seedsigner.helpers.ur2.ur_encoder import UREncoder
 from seedsigner.helpers.ur2.ur import UR
 from seedsigner.helpers.qr import QR
-from seedsigner.helpers.bip39 import get_bip39_wordlist
+from seedsigner.helpers.bip39.utils import get_bip39_wordlist
 from seedsigner.models.seed import Seed
 from seedsigner.models.settings import SettingsConstants
 

@@ -10,7 +10,7 @@ from seedsigner.gui.screens import RET_CODE__BACK_BUTTON, ButtonListScreen
 from seedsigner.gui.screens.screen import ButtonOption
 from seedsigner.helpers import mnemonic_generation
 from seedsigner.models.seed import Seed
-from seedsigner.helpers.bip39 import get_bip39_wordlist
+from seedsigner.helpers.bip39.utils import get_bip39_wordlist
 from seedsigner.models.settings_definition import SettingsConstants
 from seedsigner.views.seed_views import SeedDiscardView, SeedFinalizeView, SeedMnemonicEntryView, SeedOptionsView, SeedWordsWarningView, SeedExportXpubScriptTypeView
 

@@ -3,7 +3,7 @@ import unicodedata
 
 from embit import bip39
 from seedsigner.models.settings_definition import SettingsConstants
-from seedsigner.helpers.bip39 import get_bip39_wordlist
+from seedsigner.helpers.bip39.utils import get_bip39_wordlist
 
 """
     This is SeedSigner's internal mnemonic generation utility.

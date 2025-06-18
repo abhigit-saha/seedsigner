@@ -9,7 +9,7 @@ from embit.networks import NETWORKS
 from typing import List
 
 from seedsigner.models.settings import SettingsConstants
-from seedsigner.helpers.bip39 import get_bip39_wordlist
+from seedsigner.helpers.bip39.utils import get_bip39_wordlist
 
 logger = logging.getLogger(__name__)
 

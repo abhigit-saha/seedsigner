@@ -9,6 +9,7 @@ from typing import List
 
 from seedsigner.hardware.buttons import HardwareButtons, HardwareButtonsConstants
 from seedsigner.helpers.qr import QR
+from seedsigner.helpers.bip39.utils import get_possible_alphabet
 from seedsigner.gui.components import (Button, FontAwesomeIconConstants, Fonts, FormattedAddress, IconButton,
     IconTextLine, SeedSignerIconConstants, TextArea, GUIConstants, reflow_text_into_pages)
 from seedsigner.gui.keyboard import Keyboard, TextEntryDisplay
@@ -27,11 +28,12 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
     initial_letters: list = None
     wordlist: list = None
     possible_alphabet: str = None
+    wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN
 
     def __post_init__(self):
         super().__post_init__()
 
-        self.possible_alphabet = "abcdefghijklmnopqrstuvwxyz"
+        self.possible_alphabet = get_possible_alphabet(self.wordlist_language_code)
 
         # Measure the width required to display the longest word in the English bip39
         # wordlist.
@@ -155,7 +157,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             # remove duplicates and keep order
             self.possible_alphabet = list(dict.fromkeys(possible_letters))[:]
         else:
-            self.possible_alphabet = "abcdefghijklmnopqrstuvwxyz"
+            self.possible_alphabet = get_possible_alphabet(self.wordlist_language_code)
             self.possible_words = []
 
 
