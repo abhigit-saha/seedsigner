@@ -1323,7 +1323,7 @@ class SeedWordsBackupTestView(View):
 
 
     def run(self):
-        from embit import bip39
+        wordlist = get_bip39_wordlist(self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
 
         if self.rand_seed is not None:
             random.seed(self.rand_seed + self.cur_index if self.cur_index is not None else 0)
@@ -1334,9 +1334,9 @@ class SeedWordsBackupTestView(View):
                 self.cur_index = int(random.random() * len(self.mnemonic_list))
 
         real_word = ButtonOption(self.mnemonic_list[self.cur_index])
-        fake_word1 = ButtonOption(bip39.WORDLIST[int(random.random() * 2047)])
-        fake_word2 = ButtonOption(bip39.WORDLIST[int(random.random() * 2047)])
-        fake_word3 = ButtonOption(bip39.WORDLIST[int(random.random() * 2047)])
+        fake_word1 = ButtonOption(wordlist[int(random.random() * 2047)])
+        fake_word2 = ButtonOption(wordlist[int(random.random() * 2047)])
+        fake_word3 = ButtonOption(wordlist[int(random.random() * 2047)])
 
         button_data = [real_word, fake_word1, fake_word2, fake_word3]
         random.shuffle(button_data)
