@@ -199,17 +199,15 @@ class LoadSeedView(View):
             if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__EN:
                 return Destination(SeedMnemonicEntryView)
             else:
-                return Destination(SeedWordlistLanguageWarningView, view_args=dict(wordlist_language_code=wordlist_language_code))
+                return Destination(SeedWordlistLanguageWarningView)
 
         elif button_data[selected_menu_num] == self.TYPE_24WORD:
             self.controller.storage.init_pending_mnemonic(num_words=24)
             if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__EN:
                 return Destination(SeedMnemonicEntryView)
             else:
-                return Destination(
-                    SeedWordlistLanguageWarningView,
-                    view_args=dict(wordlist_language_code=wordlist_language_code)
-                )
+                return Destination(SeedWordlistLanguageWarningView)
+                
         elif button_data[selected_menu_num] == self.TYPE_ELECTRUM:
             return Destination(SeedElectrumMnemonicStartView)
 
@@ -219,19 +217,19 @@ class LoadSeedView(View):
 
 @dataclass
 class SeedWordlistLanguageWarningView(View):
-    wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN
 
     def run(self):
-
+        wordlist_language_code = self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
         wordlist_languages_entry = SettingsDefinition.get_settings_entry(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
-        language_name = wordlist_languages_entry.get_selection_option_display_name_by_value(self.wordlist_language_code)
+        language_name = wordlist_languages_entry.get_selection_option_display_name_by_value(wordlist_language_code)
 
-        selected_menu_num = WarningScreen(
+        selected_menu_num = self.run_screen(
+            WarningScreen,
             title=_("Non-English Wordlist"),
             status_headline=None,
             text=_("You have selected the a non-english wordlist ({}). Some wallets may not support this.".format(language_name)),
             button_data=[ButtonOption("Continue")],
-        ).display()
+        )
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
