@@ -7,7 +7,7 @@ from seedsigner.helpers.bip39.utils import get_bip39_wordlist
 
 """
     This is SeedSigner's internal mnemonic generation utility.
-
+    
     It can also be run as an independently-executable CLI to facilitate external
     verification of SeedSigner's results for a given input entropy.
 

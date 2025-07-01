@@ -33,6 +33,8 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
     def __post_init__(self):
         super().__post_init__()
 
+        # We shouldn't assume that the initial_letters are being passed without accents
+        self.initial_letters = list(self.remove_accents("".join(self.initial_letters)).strip())
         # Measure the width required to display the longest word in the English bip39
         # wordlist.
         # TODO: If we ever support other wordlist languages, adjust accordingly.
@@ -125,7 +127,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             width=arrow_button_width,
             height=arrow_button_height,
         )
-        logging.debug("random logging")
+
         self.word_font = Fonts.get_font(GUIConstants.FIXED_WIDTH_EMPHASIS_FONT_NAME, GUIConstants.get_button_font_size() + 4)
         (left, top, right, bottom) = self.word_font.getbbox(self.possible_alphabet, anchor="ls")
         self.word_font_height = -1 * top
@@ -147,13 +149,12 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             self.calc_possible_words()
             letter_num = len(search_letters)
             possible_letters = []
-
+            
             for word in self.possible_words:
                 word = self.remove_accents(word);
                 if len(word)-1 >= letter_num:
                     possible_letters.append(word[letter_num])
             # remove duplicates and keep order 
-            logger.debug(f"Possible letters for {self.wordlist_language_code} wordlist: {possible_letters}") 
             self.possible_alphabet = ''.join(dict.fromkeys(possible_letters))
         else:
             self.possible_alphabet = get_possible_alphabet(self.wordlist_language_code)
@@ -1090,7 +1091,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                     # Leave current spot blank for now. Only update the active keyboard keys
                     # when a selection has been locked in (KEY_PRESS) or removed ("del").
                     pass
-
+                
                 if keyboard_swap:
                     # Show the hw buttons' updated text and not active state
                     self.hw_button1.text = cur_button1_text
