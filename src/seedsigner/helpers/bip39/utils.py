@@ -1,12 +1,13 @@
 from seedsigner.models.settings_definition import SettingsConstants
-
 def get_bip39_wordlist(wordlist_language_code: str) -> list:
     """
     Returns the wordlist for the specified language code.
     """
     match wordlist_language_code:
         case SettingsConstants.WORDLIST_LANGUAGE__EN:
-            from .wordlists.english_list import WORDLIST__ENGLISH
+            from embit.wordlists.bip39 import WORDLIST as WORDLIST__ENGLISH
+            if len(WORDLIST__ENGLISH) != 2048 or WORDLIST__ENGLISH[0] != "abandon":
+                raise ValueError("English wordlist is not loaded correctly.")
             return WORDLIST__ENGLISH
         case SettingsConstants.WORDLIST_LANGUAGE__ES:
             from .wordlists.spanish_list import WORDLIST__SPANISH
