@@ -308,6 +308,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
                         self.calc_possible_alphabet()
                         self.keyboard.update_active_keys(active_keys=self.possible_alphabet)
                         self.keyboard.render_keys()
+                        self.text_entry_display.render()
 
                         # Update the right-hand possible matches area
                         self.render_possible_matches()
@@ -410,7 +411,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
                         self.letters = self.letters[:-1]
                         self.letters.append(ret_val)
                         self.calc_possible_words()  # live update our matches as we move
-
+                    
                     else:
                         # We've navigated to a deactivated letter
                         pass
@@ -424,33 +425,6 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
 
                 # Now issue one call to send the pixels to the screen
                 self.renderer.show_image()
-
-@dataclass
-class SeedWordsLanguageWarningScreen(WarningEdgesMixin, ButtonListScreen):
-    """
-    Shows a warning when user selects a non-English wordlist for seed entry.
-    """
-    wordlist_language_code: str = None
-
-    def __post_init__(self):
-        # Get the language name for display
-        from seedsigner.models.settings_definition import SettingsDefinition
-        wordlist_languages_entry = SettingsDefinition.get_settings_entry(SettingsConstants.SETTING__WORDLIST_LANGUAGE)
-        self.language_name = wordlist_languages_entry.get_selection_option_display_name_by_value(self.wordlist_language_code)
-
-        # Set up styling
-        self.status_color = GUIConstants.WARNING_COLOR
-        self.is_bottom_list = True
-        super().__post_init__()
-
-        # Add warning text
-        warning_text = _("You've selected the {} wordlist. Some hardware wallets or software may have limited support for non-English seeds.").format(self.language_name)
-
-        self.components.append(TextArea(
-            text=warning_text,
-            screen_y=self.top_nav.height + GUIConstants.COMPONENT_PADDING,
-            height=self.buttons[0].screen_y - self.top_nav.height - GUIConstants.COMPONENT_PADDING,
-        ))
 
 @dataclass
 class SeedFinalizeScreen(ButtonListScreen):
@@ -913,7 +887,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         elif self.initial_keyboard == self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT:
             cur_keyboard = self.keyboard_symbols_2
             self.hw_button2.text = self.KEYBOARD__DIGITS_BUTTON_TEXT
-
+        
         else:
             cur_keyboard = self.keyboard_abc
 
@@ -1091,7 +1065,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                     # Leave current spot blank for now. Only update the active keyboard keys
                     # when a selection has been locked in (KEY_PRESS) or removed ("del").
                     pass
-                
+             
                 if keyboard_swap:
                     # Show the hw buttons' updated text and not active state
                     self.hw_button1.text = cur_button1_text
@@ -1330,7 +1304,7 @@ class SeedTranscribeSeedQRZoomedInScreen(BaseScreen):
     def draw_zone_labels(self):
         # Create overlay for zone labels (e.g. "D-5")
         # TODO: Discuss w/translators if these zone labels need to be translated; would
-        # trigger a secondary need to have translated SeedQR printable templates as well.
+        # trigger a secondary need to have translated SeedQR printable templates as well. 
         zone_labels_x = ["1", "2", "3", "4", "5", "6"]
         zone_labels_y = ["A", "B", "C", "D", "E", "F"]
 
@@ -1529,7 +1503,7 @@ class SeedAddressVerificationScreen(ButtonListScreen):
         if self.verified_index.cur_count is not None:
             # Note that the ProgressThread will have already exited on its own.
 
-            # Return a success value (anything other than None) to end the
+            # Return a success value (anything other than None) to end the 
             # ButtonListScreen._run() loop.
             return 1
 
