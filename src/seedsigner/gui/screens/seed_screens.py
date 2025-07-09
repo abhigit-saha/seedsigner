@@ -27,12 +27,12 @@ logger = logging.getLogger(__name__)
 class SeedMnemonicEntryScreen(BaseTopNavScreen):
     initial_letters: list = None
     wordlist: list = None
-    possible_alphabet: str = None
+    charset: str = None
     wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN
 
     def __post_init__(self):
         super().__post_init__()
-
+        self.possible_alphabet = self.charset
         # We shouldn't assume that the initial_letters are being passed without accents
         self.initial_letters = list(self.remove_accents("".join(self.initial_letters)).strip())
         # Measure the width required to display the longest word in the English bip39
@@ -54,7 +54,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
 
         self.keyboard = Keyboard(
             draw=self.image_draw,
-            charset=self.possible_alphabet,
+            charset=self.charset,
             rows=5,
             cols=6,
             rect=(
@@ -95,7 +95,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         self.highlighted_row_y = int((self.canvas_height - GUIConstants.BUTTON_HEIGHT)/2)
 
         self.matches_list_highlight_button = Button(
-            text=self.possible_alphabet,
+            text=self.charset,
             is_text_centered=False,
             font_name=GUIConstants.FIXED_WIDTH_EMPHASIS_FONT_NAME,
             font_size=GUIConstants.get_button_font_size() + 4,
@@ -129,7 +129,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
         )
 
         self.word_font = Fonts.get_font(GUIConstants.FIXED_WIDTH_EMPHASIS_FONT_NAME, GUIConstants.get_button_font_size() + 4)
-        (left, top, right, bottom) = self.word_font.getbbox(self.possible_alphabet, anchor="ls")
+        (left, top, right, bottom) = self.word_font.getbbox(self.charset, anchor="ls")
         self.word_font_height = -1 * top
         self.matches_list_row_height = self.word_font_height + GUIConstants.COMPONENT_PADDING
 
@@ -157,7 +157,7 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             # remove duplicates and keep order 
             self.possible_alphabet = ''.join(dict.fromkeys(possible_letters))
         else:
-            self.possible_alphabet = get_possible_alphabet(self.wordlist_language_code)
+            self.possible_alphabet = self.charset
             self.possible_words = []
 
 

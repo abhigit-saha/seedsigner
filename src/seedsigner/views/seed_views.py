@@ -256,7 +256,7 @@ class SeedMnemonicEntryView(View):
             title=_("Seed Word #{}").format(self.cur_word_index + 1),  # Human-readable 1-indexing!
             initial_letters=list(self.cur_word) if self.cur_word else ["a"],
             wordlist=get_bip39_wordlist(wordlist_language_code=wordlist_language_code),
-            possible_alphabet=get_possible_alphabet(wordlist_language_code),
+            charset=get_possible_alphabet(wordlist_language_code),
             wordlist_language_code=wordlist_language_code,
         )
 
