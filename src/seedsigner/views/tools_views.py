@@ -173,7 +173,7 @@ class ToolsImageEntropyMnemonicLengthView(View):
                 final_hash = final_hash[:16]
 
         # Generate the mnemonic
-        mnemonic = mnemonic_generation.generate_mnemonic_from_bytes(final_hash, wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
+            mnemonic = mnemonic_generation.generate_mnemonic_from_bytes(final_hash, wordlist_language_code=self.settings.get_value(SettingsConstants.SETTING__WORDLIST_LANGUAGE))
 
             # Image should never get saved nor stick around in memory
             seed_entropy_image = None
