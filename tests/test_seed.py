@@ -1,4 +1,5 @@
 import pytest
+import unicodedata
 from seedsigner.models.seed import InvalidSeedException, Seed, ElectrumSeed
 
 from seedsigner.models.settings import SettingsConstants
@@ -7,13 +8,13 @@ from seedsigner.models.settings import SettingsConstants
 # TODO: Change TAB indents to SPACE
 
 def test_seed():
-	seed = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split())
+	seed = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase="mühpassphrase")
 	
-	assert seed.seed_bytes == b'q\xb3\xd1i\x0c\x9b\x9b\xdf\xa7\xd9\xd97H\xa8,\xa7\xd9>\xeck\xc2\xf5ND?, \x88-\x07\x9aa\xc5\xee\xb7\xbf\xc4x\xd6\x07 X\xb6}?M\xaa\x05\xa6\xa7(>\xbf\x03\xb0\x9d\xef\xed":\xdf\x88w7'
+	assert seed.seed_bytes == b'MN\xa9\xcb\xd6\n\xa5Y\xf6OyJ\xc5\x86\xe6\x06\x85\x10do\xc1\xf4\xe9\xdef\x11:\xf9\xad\x19\xc0\x1b\xed\xcb\xc41\x91y\x8f\xb4\xc2\x82d\x90\x86\xe9\x84\xab\xcb\x8c|f\x1a\xf6z\xf3I\xad\xc2\x00\x90\xb4\x16\xab'
 	
 	assert seed.mnemonic_str == "obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash"
 	
-	assert seed.passphrase == ""
+	assert seed.passphrase == unicodedata.normalize("NFKD", "mühpassphrase")
 	
 	# TODO: Not yet supported in new implementation
 	# seed.set_wordlist_language_code("es")
