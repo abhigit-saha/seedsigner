@@ -8,13 +8,13 @@ from seedsigner.models.settings import SettingsConstants
 # TODO: Change TAB indents to SPACE
 
 def test_seed():
-	seed = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase="mühpassphrase")
+	seed = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase="áéíóúàèìòùâêîôûãõëïüÿçăâîșțÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸÇĂÂÎȘȚ")
 	
-	assert seed.seed_bytes == b'MN\xa9\xcb\xd6\n\xa5Y\xf6OyJ\xc5\x86\xe6\x06\x85\x10do\xc1\xf4\xe9\xdef\x11:\xf9\xad\x19\xc0\x1b\xed\xcb\xc41\x91y\x8f\xb4\xc2\x82d\x90\x86\xe9\x84\xab\xcb\x8c|f\x1a\xf6z\xf3I\xad\xc2\x00\x90\xb4\x16\xab'
+	assert seed.seed_bytes == b'4\xe9\xc1 \xcd\xbd\x92\x92\x85\xff\xb9^\xd8\t)\xcd\xf7\x0b+\x1dJ$\xb09\xc3\xe8\xee\x90\x1e\xb7\xffFt\xc2>\x135j\xf9\xc4\x17\xd5\'1F\xbd@\xb1\xb38\xd1\xdc\xdfV4d"]\xe3\xc7\xfb\xa7\xf7\xe8'
 	
 	assert seed.mnemonic_str == "obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash"
 	
-	assert seed.passphrase == unicodedata.normalize("NFKD", "mühpassphrase")
+	assert seed.passphrase == unicodedata.normalize("NFKD", "áéíóúàèìòùâêîôûãõëïüÿçăâîșțÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸÇĂÂÎȘȚ")
 	
 	# TODO: Not yet supported in new implementation
 	# seed.set_wordlist_language_code("es")
