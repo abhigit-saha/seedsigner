@@ -107,9 +107,9 @@ class SettingsMenuView(View):
                 title=_("Caution"),
                 status_headline=None,
                 text=_(
-                    "Non-English wordlists are not supported by a lot of wallets, "
-                    "and you could lose your bitcoin if you want to recover your seed "
-                    "with a wallet that does not support it."
+                    "Non-English BIP-39 wordlists are not supported by most wallet software. "
+                    "Your backup will not work in "
+                    "wallets that don't support your language's wordlist."),
                 ),
                 button_data=[ButtonOption("OK")],
                 show_back_button=True
