@@ -8,13 +8,23 @@ from seedsigner.models.settings import SettingsConstants
 # TODO: Change TAB indents to SPACE
 
 def test_seed():
-	seed = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase="áéíóúàèìòùâêîôûãõëïüÿçăâîșțÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸÇĂÂÎȘȚ")
+	# Test seed with passphrase
+	seed_1 = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase="muhpassphrase")
 	
-	assert seed.seed_bytes == b'4\xe9\xc1 \xcd\xbd\x92\x92\x85\xff\xb9^\xd8\t)\xcd\xf7\x0b+\x1dJ$\xb09\xc3\xe8\xee\x90\x1e\xb7\xffFt\xc2>\x135j\xf9\xc4\x17\xd5\'1F\xbd@\xb1\xb38\xd1\xdc\xdfV4d"]\xe3\xc7\xfb\xa7\xf7\xe8'
+	assert seed_1.seed_bytes == b'\x13\xc8\xdfn\x17\xf4\xb3\x06n\x12\xfd\x1bE\x0c\x8d\x819\xe2\xf1\x9ar\xc1j\xde\x14<\xe8\x98\x8e\xd8=\xb8\x94j\x9a\x0c\xaf\xf4\x04\xa6s\xc8\xb4\xd3\xf1\xd4\x85\xde\x84u\xac\x88\\p\xeb\xcf\xbd\xc4A\xb5\xa1\xc3\xb1\xfa'
 	
-	assert seed.mnemonic_str == "obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash"
+	assert seed_1.mnemonic_str == "obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash"
 	
-	assert seed.passphrase == unicodedata.normalize("NFKD", "áéíóúàèìòùâêîôûãõëïüÿçăâîșțÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸÇĂÂÎȘȚ")
+	assert seed_1.passphrase == unicodedata.normalize("NFKD", "muhpassphrase")
+	
+	# Test seed with an accented passphrase
+	seed_2 = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase="áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ")
+	
+	assert seed_2.seed_bytes == b'\xea\xe4\xd6\xb5\x17\x91L\x12h\x9a\x96\x06\x08\x13\xf6\xe3\x80O\x9d\xa8\xeaU\xc8\xef\xbeSx\xe6\xb91\xc4\xd2_\xda\xae\x9a\xda\xc18q\x1b\x15u\xe6f\x8cw\xc1\x10\x8b\x94gV\x85\x10\xf4Rp[\x06\x8c\x89o\x07'
+	
+	assert seed_2.mnemonic_str == "obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash"
+	
+	assert seed_2.passphrase == unicodedata.normalize("NFKD", "áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ")
 	
 	# TODO: Not yet supported in new implementation
 	# seed.set_wordlist_language_code("es")
