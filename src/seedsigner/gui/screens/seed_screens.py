@@ -675,8 +675,12 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
     KEYBOARD__DIGITS_BUTTON_TEXT = "123"
     KEYBOARD__SYMBOLS_1_BUTTON_TEXT = "!@#"
     KEYBOARD__SYMBOLS_2_BUTTON_TEXT = "*[]"
-    KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT = "áêç"
-    KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT = "ÁÊÇ"
+    KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT = "áéí"
+    KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT = "ÁÉÍ"
+    KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT = "ëïü"
+    KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT = "ËÏÜ"
+    KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT = "çñş"
+    KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT = "ÇÑŞ"
 
 
 
@@ -695,8 +699,18 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         # Isolate the more math-oriented or just uncommon symbols
         keys_symbol_2 = """^*[]{}_\\|<>/`~"""
 
-        keys_accented_lower = "áéíóúàèìòùâêîôûãõëïüÿçăâîșț"
-        keys_accented_upper = "ÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸÇĂÂÎȘȚ"
+        # Split accented characters: separate vowels and consonants across keyboards
+        # Keyboard 1: Common accented vowels
+        keys_accented_lower_1 = "áéíóúàèìòùâêîôûãõ"
+        keys_accented_upper_1 = "ÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕ"
+        
+        # Keyboard 2: Some rare accented vowels
+        keys_accented_lower_2 = "ëïüÿăąæøåð"
+        keys_accented_upper_2 = "ËÏÜŸĂĄÆØÅÐ"
+        
+        # Keyboard 3: Some common accented consonants
+        keys_accented_lower_3 = "çñşțćłšžčřňťđĺŕľĵĝħ"
+        keys_accented_upper_3 = "ÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ"
 
         # Set up the keyboard params
         self.right_panel_buttons_width = 56
@@ -706,9 +720,9 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         text_entry_display_height = 30
 
         keyboard_start_y = text_entry_display_y + text_entry_display_height + GUIConstants.COMPONENT_PADDING
-        self.keyboard_accented = Keyboard(
+        self.keyboard_accented_1 = Keyboard(
             draw=self.renderer.draw,
-            charset=keys_accented_lower,
+            charset=keys_accented_lower_1,
             rows=4,
             cols=max_cols,
             rect=(
@@ -726,9 +740,93 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT]
         )
 
-        self.keyboard_accented_upper = Keyboard(
+        self.keyboard_accented_upper_1 = Keyboard(
             draw=self.renderer.draw,
-            charset=keys_accented_upper,
+            charset=keys_accented_upper_1,
+            rows=4,
+            cols=max_cols,
+            rect=(
+                GUIConstants.COMPONENT_PADDING,
+                keyboard_start_y,
+                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
+                self.canvas_height - GUIConstants.EDGE_PADDING
+            ),
+            additional_keys=[
+                Keyboard.KEY_SPACE_5,
+                Keyboard.KEY_CURSOR_LEFT,
+                Keyboard.KEY_CURSOR_RIGHT,
+                Keyboard.KEY_BACKSPACE
+            ],
+            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
+            render_now=False
+        )
+
+        self.keyboard_accented_2 = Keyboard(
+            draw=self.renderer.draw,
+            charset=keys_accented_lower_2,
+            rows=4,
+            cols=max_cols,
+            rect=(
+                GUIConstants.COMPONENT_PADDING,
+                keyboard_start_y,
+                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
+                self.canvas_height - GUIConstants.EDGE_PADDING
+            ),
+            additional_keys=[
+                Keyboard.KEY_SPACE_5,
+                Keyboard.KEY_CURSOR_LEFT,
+                Keyboard.KEY_CURSOR_RIGHT,
+                Keyboard.KEY_BACKSPACE
+            ],
+            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
+            render_now=False
+        )
+
+        self.keyboard_accented_upper_2 = Keyboard(
+            draw=self.renderer.draw,
+            charset=keys_accented_upper_2,
+            rows=4,
+            cols=max_cols,
+            rect=(
+                GUIConstants.COMPONENT_PADDING,
+                keyboard_start_y,
+                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
+                self.canvas_height - GUIConstants.EDGE_PADDING
+            ),
+            additional_keys=[
+                Keyboard.KEY_SPACE_5,
+                Keyboard.KEY_CURSOR_LEFT,
+                Keyboard.KEY_CURSOR_RIGHT,
+                Keyboard.KEY_BACKSPACE
+            ],
+            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
+            render_now=False
+        )
+
+        self.keyboard_accented_3 = Keyboard(
+            draw=self.renderer.draw,
+            charset=keys_accented_lower_3,
+            rows=4,
+            cols=max_cols,
+            rect=(
+                GUIConstants.COMPONENT_PADDING,
+                keyboard_start_y,
+                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
+                self.canvas_height - GUIConstants.EDGE_PADDING
+            ),
+            additional_keys=[
+                Keyboard.KEY_SPACE_5,
+                Keyboard.KEY_CURSOR_LEFT,
+                Keyboard.KEY_CURSOR_RIGHT,
+                Keyboard.KEY_BACKSPACE
+            ],
+            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
+            render_now=False
+        )
+
+        self.keyboard_accented_upper_3 = Keyboard(
+            draw=self.renderer.draw,
+            charset=keys_accented_upper_3,
             rows=4,
             cols=max_cols,
             rect=(
@@ -907,14 +1005,30 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         # Change from the default lowercase keyboard for the screenshot generator
         if self.initial_keyboard == self.KEYBOARD__UPPERCASE_BUTTON_TEXT:
             cur_keyboard = self.keyboard_ABC
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT
+            self.hw_button1.text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
 
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT
+        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT:
+            cur_keyboard = self.keyboard_accented_1
+            self.hw_button1.text = self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT
 
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented_upper
+        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT:
+            cur_keyboard = self.keyboard_accented_upper_1
+            self.hw_button1.text = self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT
+
+        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT:
+            cur_keyboard = self.keyboard_accented_2
+            self.hw_button1.text = self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT
+
+        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT:
+            cur_keyboard = self.keyboard_accented_upper_2
+            self.hw_button1.text = self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT
+
+        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT:
+            cur_keyboard = self.keyboard_accented_3
+            self.hw_button1.text = self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT
+
+        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT:
+            cur_keyboard = self.keyboard_accented_upper_3
             self.hw_button1.text = self.KEYBOARD__LOWERCASE_BUTTON_TEXT
 
         elif self.initial_keyboard == self.KEYBOARD__DIGITS_BUTTON_TEXT:
@@ -989,19 +1103,35 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                     elif cur_button1_text == self.KEYBOARD__UPPERCASE_BUTTON_TEXT:
                         self.keyboard_ABC.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
                         cur_keyboard = self.keyboard_ABC
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT:
-                        self.keyboard_accented.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT:
-                        self.keyboard_accented_upper.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented_upper
+                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
+                    elif cur_button1_text == self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT:
+                        self.keyboard_accented_1.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.keyboard_accented_1
+                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT
+                    elif cur_button1_text == self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT:
+                        self.keyboard_accented_upper_1.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.keyboard_accented_upper_1
+                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT
+                    elif cur_button1_text == self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT:
+                        self.keyboard_accented_2.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.keyboard_accented_2
+                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT
+                    elif cur_button1_text == self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT:
+                        self.keyboard_accented_upper_2.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.keyboard_accented_upper_2
+                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT
+                    elif cur_button1_text == self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT:
+                        self.keyboard_accented_3.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.keyboard_accented_3
+                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT
+                    elif cur_button1_text == self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT:
+                        self.keyboard_accented_upper_3.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.keyboard_accented_upper_3
                         cur_button1_text = self.KEYBOARD__LOWERCASE_BUTTON_TEXT
                     else:
                         self.keyboard_ABC.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
                         cur_keyboard = self.keyboard_ABC
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT
+                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
                     cur_keyboard.render_keys()
 
                     # Show the changes; this loop will have two renders
@@ -1024,10 +1154,18 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                         cur_button1_text = self.KEYBOARD__LOWERCASE_BUTTON_TEXT
                     elif cur_keyboard == self.keyboard_ABC:
                         cur_button1_text = self.KEYBOARD__UPPERCASE_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented_upper:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT
+                    elif cur_keyboard == self.keyboard_accented_1:
+                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
+                    elif cur_keyboard == self.keyboard_accented_upper_1:
+                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT
+                    elif cur_keyboard == self.keyboard_accented_2:
+                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT
+                    elif cur_keyboard == self.keyboard_accented_upper_2:
+                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT
+                    elif cur_keyboard == self.keyboard_accented_3:
+                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT
+                    elif cur_keyboard == self.keyboard_accented_upper_3:
+                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT
 
                     if cur_button2_text == self.KEYBOARD__DIGITS_BUTTON_TEXT:
                         self.keyboard_digits.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
