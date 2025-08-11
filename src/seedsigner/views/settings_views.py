@@ -109,7 +109,7 @@ class SettingsMenuView(View):
                 text=_(
                     "Non-English BIP-39 wordlists are not supported by most wallet software. "
                     "Your backup will not work in "
-                    "wallets that don't support your language's wordlist."),
+                    "wallets that don't support your language's wordlist."
                 ),
                 button_data=[ButtonOption("OK")],
                 show_back_button=True

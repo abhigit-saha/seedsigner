@@ -293,22 +293,12 @@ class SettingsConstants:
         (CUSTOM_DERIVATION, _mft("Custom Derivation")),
     ]
 
-    WORDLIST_LANGUAGE__EN = "en"
-    WORDLIST_LANGUAGE__ES = "es"
-    WORDLIST_LANGUAGE__FR = "fr"
-    WORDLIST_LANGUAGE__IT = "it"
-    WORDLIST_LANGUAGE__PT = "pt"
-    WORDLIST_LANGUAGE__ZH_HANS_CN = "zh_Hans_CN"
-    WORDLIST_LANGUAGE__ZH_HANT_TW = "zh_Hant_TW"
-
     ALL_WORDLIST_LANGUAGES = [
-        (WORDLIST_LANGUAGE__EN, "English"),
-        (WORDLIST_LANGUAGE__ES, "Español"),
-        (WORDLIST_LANGUAGE__FR, "Français"),
-        (WORDLIST_LANGUAGE__IT, "Italiano"),
-        (WORDLIST_LANGUAGE__PT, "Português"),
-        # (WORDLIST_LANGUAGE__ZH_HANS_CN, "简体中文"),
-        # (WORDLIST_LANGUAGE__ZH_HANT_TW, "繁體中文"),
+        (LOCALE__ENGLISH, "English"),
+        (LOCALE__SPANISH, "Español"),
+        (LOCALE__FRENCH, "Français"),
+        (LOCALE__ITALIAN, "Italiano"),
+        (LOCALE__PORTUGUESE_PT, "Português"),
     ]
 
     # Individual SettingsEntry attr_names
@@ -696,7 +686,7 @@ class SettingsDefinition:
                       type=SettingsConstants.TYPE__SELECT_1,
                       selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
-                      default_value=SettingsConstants.WORDLIST_LANGUAGE__EN),
+                      default_value=SettingsConstants.LOCALE__ENGLISH),
 
         # Hardware config
         SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,

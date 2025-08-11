@@ -196,14 +196,14 @@ class LoadSeedView(View):
         
         elif button_data[selected_menu_num] == self.TYPE_12WORD:
             self.controller.storage.init_pending_mnemonic(num_words=12)
-            if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__EN:
+            if wordlist_language_code == SettingsConstants.LOCALE__ENGLISH:
                 return Destination(SeedMnemonicEntryView)
             else:
                 return Destination(SeedWordlistLanguageWarningView)
 
         elif button_data[selected_menu_num] == self.TYPE_24WORD:
             self.controller.storage.init_pending_mnemonic(num_words=24)
-            if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__EN:
+            if wordlist_language_code == SettingsConstants.LOCALE__ENGLISH:
                 return Destination(SeedMnemonicEntryView)
             else:
                 return Destination(SeedWordlistLanguageWarningView)

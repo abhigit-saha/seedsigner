@@ -41,7 +41,7 @@ class DecodeQR:
     """
         Used to process images or string data from animated qr codes.
     """
-    def __init__(self, wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN):
+    def __init__(self, wordlist_language_code: str = SettingsConstants.LOCALE__ENGLISH):
         self.wordlist_language_code = wordlist_language_code
         self.complete = False
         self.qr_type = None

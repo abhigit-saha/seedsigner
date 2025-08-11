@@ -23,7 +23,7 @@ class Seed:
     def __init__(self,
                  mnemonic: List[str] = None,
                  passphrase: str = "",
-                 wordlist_language_code: str = SettingsConstants.WORDLIST_LANGUAGE__EN) -> None:
+                 wordlist_language_code: str = SettingsConstants.LOCALE__ENGLISH) -> None:
         self._wordlist_language_code = wordlist_language_code
 
         if not mnemonic:

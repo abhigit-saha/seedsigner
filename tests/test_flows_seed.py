@@ -15,13 +15,13 @@ from seedsigner.views import seed_views, scan_views, settings_views
 
 # Test wordlist languages and corresponding test mnemonics
 WORDLIST_LANGUAGES = [
-    SettingsConstants.WORDLIST_LANGUAGE__EN,
-    SettingsConstants.WORDLIST_LANGUAGE__ES,
+    SettingsConstants.LOCALE__ENGLISH,
+    SettingsConstants.LOCALE__SPANISH,
 ]
 
 TEST_MNEMONICS = {
-    SettingsConstants.WORDLIST_LANGUAGE__EN: "tone flat shed cool census soul paddle boy flight fantasy stem social".split(),
-    SettingsConstants.WORDLIST_LANGUAGE__ES: ["ábaco"] * 11 + ["abierto"],
+    SettingsConstants.LOCALE__ENGLISH: "tone flat shed cool census soul paddle boy flight fantasy stem social".split(),
+    SettingsConstants.LOCALE__SPANISH: ["ábaco"] * 11 + ["abierto"],
 } 
 
 
@@ -87,7 +87,7 @@ class TestSeedFlows(FlowTest):
 
             # Now add each manual word entry step
 
-            if(wordlist_language_code != SettingsConstants.WORDLIST_LANGUAGE__EN):
+            if(wordlist_language_code != SettingsConstants.LOCALE__ENGLISH):
                 sequence.append(FlowStep(seed_views.SeedWordlistLanguageWarningView))
 
             for word in mnemonic:
@@ -104,14 +104,14 @@ class TestSeedFlows(FlowTest):
             self.run_sequence(sequence)
 
         # Test data from iancoleman.io; 12- and 24-word mnemonic
-        test_with_mnemonic("tone flat shed cool census soul paddle boy flight fantasy stem social".split(), wordlist_language_code=SettingsConstants.WORDLIST_LANGUAGE__EN)
+        test_with_mnemonic("tone flat shed cool census soul paddle boy flight fantasy stem social".split(), wordlist_language_code=SettingsConstants.LOCALE__ENGLISH)
 
         BaseTest.reset_controller()
         # Non english wordlist test
-        test_with_mnemonic("ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco abierto".split(), wordlist_language_code=SettingsConstants.WORDLIST_LANGUAGE__ES)
+        test_with_mnemonic("ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco ábaco abierto".split(), wordlist_language_code=SettingsConstants.LOCALE__SPANISH)
         BaseTest.reset_controller()
 
-        test_with_mnemonic("cotton artefact spy mind wing there echo steak child oak awful host despair online bicycle divorce middle firm diamond rare execute chimney almost hollow".split(), wordlist_language_code=SettingsConstants.WORDLIST_LANGUAGE__EN)
+        test_with_mnemonic("cotton artefact spy mind wing there echo steak child oak awful host despair online bicycle divorce middle firm diamond rare execute chimney almost hollow".split(), wordlist_language_code=SettingsConstants.LOCALE__ENGLISH)
 
     @pytest.mark.parametrize("wordlist_language_code", WORDLIST_LANGUAGES)
     def test_invalid_mnemonic(self, wordlist_language_code):
@@ -129,13 +129,13 @@ class TestSeedFlows(FlowTest):
         ]
         
         # Add warning screen for non-English languages
-        if wordlist_language_code != SettingsConstants.WORDLIST_LANGUAGE__EN:
+        if wordlist_language_code != SettingsConstants.LOCALE__ENGLISH:
             sequence.append(FlowStep(seed_views.SeedWordlistLanguageWarningView))
         
         for word in mnemonic[:-1]:
             sequence.append(FlowStep(seed_views.SeedMnemonicEntryView, screen_return_value=word))
 
-        invalid_checksum_word = "zebra" if wordlist_language_code == SettingsConstants.WORDLIST_LANGUAGE__EN else "ábaco"  # Empty string for non-English languages
+        invalid_checksum_word = "zebra" if wordlist_language_code == SettingsConstants.LOCALE__ENGLISH else "ábaco"  # Empty string for non-English languages
         sequence += [
             FlowStep(seed_views.SeedMnemonicEntryView, screen_return_value=invalid_checksum_word),  # But finish with an INVALID checksum word
             FlowStep(seed_views.SeedMnemonicInvalidView, button_data_selection=seed_views.SeedMnemonicInvalidView.EDIT),
