@@ -616,6 +616,15 @@ class SettingsDefinition:
                       selection_options=SettingsConstants.OPTIONS__ENABLED_DISABLED_REQUIRED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
+        SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
+                      attr_name=SettingsConstants.SETTING__WORDLIST_LANGUAGE,
+                      abbreviated_name="wordlist_lang",
+                      display_name=_mft("BIP-39 wordlist"),
+                      type=SettingsConstants.TYPE__SELECT_1,
+                      selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
+                      visibility=SettingsConstants.VISIBILITY__ADVANCED,
+                      default_value=SettingsConstants.LOCALE__ENGLISH),
+
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__CAMERA_ROTATION,
                       abbreviated_name="camera",
@@ -678,15 +687,6 @@ class SettingsDefinition:
                       display_name=_mft("Show partner logos"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__ENABLED),
-
-        SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
-                      attr_name=SettingsConstants.SETTING__WORDLIST_LANGUAGE,
-                      abbreviated_name="wordlist_lang",
-                      display_name=_mft("Mnemonic language"),
-                      type=SettingsConstants.TYPE__SELECT_1,
-                      selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
-                      visibility=SettingsConstants.VISIBILITY__ADVANCED,
-                      default_value=SettingsConstants.LOCALE__ENGLISH),
 
         # Hardware config
         SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
