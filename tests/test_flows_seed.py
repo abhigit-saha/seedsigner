@@ -32,8 +32,13 @@ class TestSeedFlows(FlowTest):
             FlowStep(seed_views.SeedOptionsView),
         ])
 
+    test_passphrases = [
+        "muhpassphrase",
+        "áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ"
+    ]
 
-    def test_passphrase_entry_flow(self):
+    @pytest.mark.parametrize("passphrase", test_passphrases)
+    def test_passphrase_entry_flow(self, passphrase):
         """
         Opting to add a bip39 passphrase on the Finalize Seed screen should enter the
         passphrase entry / review flow and end at the SeedOptionsView. 
@@ -42,39 +47,17 @@ class TestSeedFlows(FlowTest):
             FlowStep(MainMenuView, button_data_selection=MainMenuView.SCAN),
             FlowStep(scan_views.ScanView, before_run=load_seed_into_decoder),  # simulate read SeedQR; ret val is ignored
             FlowStep(seed_views.SeedFinalizeView, button_data_selection=seed_views.SeedFinalizeView.PASSPHRASE),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="muhpassphrase", is_back_button=True)),
+            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase=passphrase, is_back_button=True)),
             FlowStep(seed_views.SeedAddPassphraseExitDialogView, button_data_selection=seed_views.SeedAddPassphraseExitDialogView.DISCARD),
             FlowStep(seed_views.SeedFinalizeView, button_data_selection=seed_views.SeedFinalizeView.PASSPHRASE),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="muhpassphrase", is_back_button=True)),
+            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase=passphrase, is_back_button=True)),
             FlowStep(seed_views.SeedAddPassphraseExitDialogView, button_data_selection=seed_views.SeedAddPassphraseExitDialogView.EDIT),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="muhpassphrase")),
+            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase=passphrase)),
             FlowStep(seed_views.SeedReviewPassphraseView, button_data_selection=seed_views.SeedReviewPassphraseView.EDIT),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="muhpassphrase")),
+            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase=passphrase)),
             FlowStep(seed_views.SeedReviewPassphraseView, button_data_selection=seed_views.SeedReviewPassphraseView.DONE),
             FlowStep(seed_views.SeedOptionsView),
         ])
-        
-    def test_accented_passphrase_entry_flow(self):
-        """
-        Opting to add bip39 passphrase with accented characters should behave like the normal passphrase
-        entry flow and handle NFKD Normalization without any issues.
-        """
-        self.run_sequence([
-            FlowStep(MainMenuView, button_data_selection=MainMenuView.SCAN),
-            FlowStep(scan_views.ScanView, before_run=load_seed_into_decoder),  # simulate read SeedQR; ret val is ignored
-            FlowStep(seed_views.SeedFinalizeView, button_data_selection=seed_views.SeedFinalizeView.PASSPHRASE),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ", is_back_button=True)),
-            FlowStep(seed_views.SeedAddPassphraseExitDialogView, button_data_selection=seed_views.SeedAddPassphraseExitDialogView.DISCARD),
-            FlowStep(seed_views.SeedFinalizeView, button_data_selection=seed_views.SeedFinalizeView.PASSPHRASE),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ", is_back_button=True)),
-            FlowStep(seed_views.SeedAddPassphraseExitDialogView, button_data_selection=seed_views.SeedAddPassphraseExitDialogView.EDIT),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ")),
-            FlowStep(seed_views.SeedReviewPassphraseView, button_data_selection=seed_views.SeedReviewPassphraseView.EDIT),
-            FlowStep(seed_views.SeedAddPassphraseView, screen_return_value=dict(passphrase="áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ")),
-            FlowStep(seed_views.SeedReviewPassphraseView, button_data_selection=seed_views.SeedReviewPassphraseView.DONE),
-            FlowStep(seed_views.SeedOptionsView),
-        ])
-
 
     def test_mnemonic_entry_flow(self):
         """
