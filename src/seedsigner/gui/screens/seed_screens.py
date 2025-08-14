@@ -1310,7 +1310,7 @@ class SeedReviewPassphraseScreen(ButtonListScreen):
             if found_solution:
                 break
             font = Fonts.get_font(font_name=GUIConstants.FIXED_WIDTH_FONT_NAME, size=font_size)
-            left, top, right, bottom  = font.getbbox("X")
+            left, top, right, bottom  = font.getbbox("Ț")
             char_width, char_height = right - left, bottom - top
             for num_lines in range(1, max_lines+1):
                 # Break the passphrase into n lines
