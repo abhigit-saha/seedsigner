@@ -298,7 +298,6 @@ class SettingsConstants:
         (LOCALE__SPANISH, "Español"),
         (LOCALE__FRENCH, "Français"),
         (LOCALE__ITALIAN, "Italiano"),
-        (LOCALE__PORTUGUESE_PT, "Português"),
     ]
 
     # Individual SettingsEntry attr_names

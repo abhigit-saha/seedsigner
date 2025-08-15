@@ -2,15 +2,19 @@ import os
 import ast
 from seedsigner.models.settings_definition import SettingsConstants
 
-def _load_wordlist_from_file(language_code: str) -> list:
+# Create a set of supported language codes for quick validation
+_SUPPORTED_LANGUAGES = {x for x, y in SettingsConstants.ALL_WORDLIST_LANGUAGES}
+
+def _load_wordlist_from_file(wordlist_language_code: str) -> list:
     """
     Load wordlist from file system path in seedsigner-translations submodule.
     """
     # Get the path to the wordlist file based on the language code.
     current_dir = os.path.dirname(os.path.abspath(__file__))
     translations_dir = os.path.join(current_dir, '..', '..', 'resources', 'seedsigner-translations')
-    wordlist_file = os.path.join(translations_dir, 'l10n', language_code, 'wordlist', f'{_get_language_name(language_code)}_list.py')
-    
+    # Use the language_code directly as the filename (e.g., fr_list.py, es_list.py)
+    wordlist_file = os.path.join(translations_dir, 'l10n', wordlist_language_code, 'wordlist', f'{wordlist_language_code}_list.py')
+
     if not os.path.exists(wordlist_file):
         raise FileNotFoundError(f"Wordlist file not found: {wordlist_file}")
     
@@ -31,37 +35,27 @@ def _load_wordlist_from_file(language_code: str) -> list:
     
     raise ValueError(f"Could not find wordlist in file: {wordlist_file}")
 
-# TODO: Refactor using existing settings definition
-def _get_language_name(language_code: str) -> str:
-    """
-    Get the language name for file naming.
-    """
-    language_map = {
-        SettingsConstants.LOCALE__SPANISH: 'spanish',
-        SettingsConstants.LOCALE__FRENCH: 'french',
-        SettingsConstants.LOCALE__ITALIAN: 'italian',
-        SettingsConstants.LOCALE__PORTUGUESE_PT: 'portuguese'
-    }
-    return language_map.get(language_code, language_code)
-
 def get_bip39_wordlist(wordlist_language_code: str) -> list:
     """
     Returns the wordlist for the specified language code.
     """
-    match wordlist_language_code:
-        case SettingsConstants.LOCALE__ENGLISH:
-            from embit.wordlists.bip39 import WORDLIST as WORDLIST__ENGLISH
-            if len(WORDLIST__ENGLISH) != 2048 or WORDLIST__ENGLISH[0] != "abandon":
-                raise ValueError("English wordlist is not loaded correctly.")
-            return WORDLIST__ENGLISH
-        case SettingsConstants.LOCALE__SPANISH | SettingsConstants.LOCALE__FRENCH | SettingsConstants.LOCALE__ITALIAN | SettingsConstants.LOCALE__PORTUGUESE_PT:
-            return _load_wordlist_from_file(wordlist_language_code)
-        case _:
-            raise ValueError(f"Unsupported language code: {wordlist_language_code}")
+    # Only support languages that are in ALL_WORDLIST_LANGUAGES
+    if wordlist_language_code not in _SUPPORTED_LANGUAGES:
+        raise ValueError(f"Unsupported language code: {wordlist_language_code}")
+
+    if wordlist_language_code == SettingsConstants.LOCALE__ENGLISH:
+        from embit.wordlists.bip39 import WORDLIST as WORDLIST__ENGLISH
+        if len(WORDLIST__ENGLISH) != 2048 or WORDLIST__ENGLISH[0] != "abandon":
+            raise ValueError("English wordlist is not loaded correctly.")
+        return WORDLIST__ENGLISH
+    else:
+        return _load_wordlist_from_file(wordlist_language_code)
 
 def get_possible_alphabet(wordlist_language_code: str) -> str: 
-    if wordlist_language_code in [SettingsConstants.LOCALE__ENGLISH, SettingsConstants.LOCALE__SPANISH, SettingsConstants.LOCALE__FRENCH, SettingsConstants.LOCALE__ITALIAN, SettingsConstants.LOCALE__PORTUGUESE_PT]:
-        return "abcdefghijklmnopqrstuvwxyz"
-    else: 
+    """
+    Returns the possible alphabet for the specified language code.
+    """
+    if wordlist_language_code not in _SUPPORTED_LANGUAGES:
         raise ValueError(f"Unsupported language code: {wordlist_language_code}")
     
+    return "abcdefghijklmnopqrstuvwxyz"

@@ -149,12 +149,11 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
             self.calc_possible_words()
             letter_num = len(search_letters)
             possible_letters = []
-            
             for word in self.possible_words:
                 word = self.remove_accents(word);
                 if len(word)-1 >= letter_num:
                     possible_letters.append(word[letter_num])
-            # remove duplicates and keep order 
+            # remove duplicates and keep order
             self.possible_alphabet = ''.join(dict.fromkeys(possible_letters))
         else:
             self.possible_alphabet = self.charset
@@ -425,6 +424,8 @@ class SeedMnemonicEntryScreen(BaseTopNavScreen):
 
                 # Now issue one call to send the pixels to the screen
                 self.renderer.show_image()
+
+
 
 @dataclass
 class SeedFinalizeScreen(ButtonListScreen):
