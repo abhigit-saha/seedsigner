@@ -358,7 +358,7 @@ class SeedAddPassphraseView(View):
         passphrase_title=self.seed.passphrase_label
         ret_dict = self.run_screen(
             seed_screens.SeedAddPassphraseScreen,
-            passphrase=self.seed.passphrase,
+            passphrase=self.seed.passphrase_display,
             title=passphrase_title,
             initial_keyboard=self.initial_keyboard,
         )
