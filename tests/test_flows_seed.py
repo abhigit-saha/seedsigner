@@ -32,6 +32,7 @@ class TestSeedFlows(FlowTest):
             FlowStep(seed_views.SeedOptionsView),
         ])
 
+
     test_passphrases = [
         "muhpassphrase",
         "áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ"
@@ -58,6 +59,7 @@ class TestSeedFlows(FlowTest):
             FlowStep(seed_views.SeedReviewPassphraseView, button_data_selection=seed_views.SeedReviewPassphraseView.DONE),
             FlowStep(seed_views.SeedOptionsView),
         ])
+
 
     def test_mnemonic_entry_flow(self):
         """
