@@ -41,7 +41,7 @@ class TestSeedFlows(FlowTest):
     @pytest.mark.parametrize("passphrase", test_passphrases)
     def test_passphrase_entry_flow(self, passphrase):
         """
-        Opting to add a bip39 passphrase on the Finalize Seed screen should enter the
+        Opting to add a BIP-39 passphrase on the Finalize Seed screen should enter the
         passphrase entry / review flow and end at the SeedOptionsView. 
         """
         self.run_sequence([
