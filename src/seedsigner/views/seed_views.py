@@ -439,7 +439,7 @@ class SeedReviewPassphraseView(View):
             seed_screens.SeedReviewPassphraseScreen,
             fingerprint_without=fingerprint_without,
             fingerprint_with=fingerprint_with,
-            passphrase=self.seed.passphrase,
+            passphrase=self.seed.passphrase_display,
             button_data=button_data,
             show_back_button=False,
         )
