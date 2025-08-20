@@ -638,7 +638,7 @@ class SeedExportXpubDetailsScreen(WarningEdgesMixin, ButtonListScreen):
         self.fingerprint_line = IconTextLine(
             icon_name=SeedSignerIconConstants.FINGERPRINT,
             icon_color=GUIConstants.INFO_COLOR,
-            # TRANSLATOR_NOTE: Short for "BIP32 Master Fingerprint"
+            # TRANSLATOR_NOTE: Short for "BIP-32 Master Fingerprint"
             label_text=_("Fingerprint"),
             value_text=self.fingerprint,
             screen_x=GUIConstants.COMPONENT_PADDING,

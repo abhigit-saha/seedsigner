@@ -383,7 +383,7 @@ class SettingsConstants:
 
     # Label strings
     LABEL__BIP39_PASSPHRASE = _mft("BIP-39 Passphrase")
-    # TRANSLATOR_NOTE: Terminology used by Electrum seeds; equivalent to bip39 passphrase
+    # TRANSLATOR_NOTE: Terminology used by Electrum seeds; equivalent to BIP-39 passphrase
     custom_extension = _mft("Custom Extension")
     LABEL__CUSTOM_EXTENSION = custom_extension
 
@@ -530,6 +530,15 @@ class SettingsDefinition:
                       selection_options=SettingsConstants.get_detected_languages(),
                       default_value=SettingsConstants.LOCALE__ENGLISH),
 
+        # TODO: Support other BIP-39 wordlist languages! Until then, type == HIDDEN
+        SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
+                      attr_name=SettingsConstants.SETTING__WORDLIST_LANGUAGE,
+                      abbreviated_name="wordlist_lang",
+                      display_name=_mft("Mnemonic language"),
+                      type=SettingsConstants.TYPE__SELECT_1,
+                      visibility=SettingsConstants.VISIBILITY__HIDDEN,
+                      selection_options=SettingsConstants.ALL_WORDLIST_LANGUAGES,
+                      default_value=SettingsConstants.WORDLIST_LANGUAGE__ENGLISH),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__SYSTEM,
                       attr_name=SettingsConstants.SETTING__PERSISTENT_SETTINGS,
