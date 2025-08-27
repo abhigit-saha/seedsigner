@@ -764,7 +764,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
-        self.text_to_keyboard_1[self.KEYBOARD__LOWERCASE_BUTTON_TEXT] = self.keyboard_abc
+        self.text_to_keyboard_1[self.KEYBOARD__UPPERCASE_BUTTON_TEXT] = self.keyboard_ABC
 
         self.keyboard_accented_lower_1 = Keyboard(
             draw=self.renderer.draw,
@@ -962,6 +962,10 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         )
         self.text_to_keyboard_2[self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT] = self.keyboard_symbols_2
 
+        # Set the list of button texts for cycling
+        self.button1_texts = list(self.text_to_keyboard_1.keys())
+        self.button2_texts = list(self.text_to_keyboard_2.keys())
+
         self.text_entry_display = TextEntryDisplay(
             canvas=self.renderer.canvas,
             rect=(
@@ -1017,16 +1021,14 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         super()._render()
         # If the initial keyboard is a textual input keyboard, then cycle through hw_button1 text
         if self.initial_keyboard in self.text_to_keyboard_1:
-            button_texts = list(self.text_to_keyboard_1.keys())
             cur_keyboard = self.text_to_keyboard_1[self.initial_keyboard]
             # Set the hw_button1 text as the keyboard of the next keyboard in the list (modulo wrap)
-            self.hw_button1.text = button_texts[(button_texts.index(self.initial_keyboard) + 1) % len(button_texts)]
-        # Else through hw_button2 text
+            self.hw_button1.text = self.button1_texts[(self.button1_texts.index(self.initial_keyboard) + 1) % len(self.button1_texts)]
+        # Else cycle through hw_button2 text
         else:
-            button_texts = list(self.text_to_keyboard_2.keys())
             cur_keyboard = self.text_to_keyboard_2[self.initial_keyboard]
             # Similarly for hw_button2
-            self.hw_button2.text = button_texts[(button_texts.index(self.initial_keyboard) + 1) % len(button_texts)]
+            self.hw_button2.text = self.button2_texts[(self.button2_texts.index(self.initial_keyboard) + 1) % len(self.button2_texts)]
 
         self.text_entry_display.render()
         self.hw_button1.render()
@@ -1042,6 +1044,8 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         cur_keyboard = self.keyboard_abc
         cur_button1_text = self.KEYBOARD__UPPERCASE_BUTTON_TEXT
         cur_button2_text = self.KEYBOARD__DIGITS_BUTTON_TEXT
+        keyboard_to_text_1 = {v: k for k, v in self.text_to_keyboard_1.items()}
+        keyboard_to_text_2 = {v: k for k, v in self.text_to_keyboard_2.items()}
 
         # Start the interactive update loop
         while True:
@@ -1071,49 +1075,14 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                     self.hw_button1.render()
 
                     # Return to the same button2 keyboard, if applicable
-                    if cur_keyboard == self.keyboard_digits:
-                        cur_button2_text = self.KEYBOARD__DIGITS_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_symbols_1:
-                        cur_button2_text = self.KEYBOARD__SYMBOLS_1_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_symbols_2:
-                        cur_button2_text = self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT
+                    if cur_keyboard in keyboard_to_text_2:
+                        cur_button2_text = keyboard_to_text_2[cur_keyboard]
 
-                    if cur_button1_text == self.KEYBOARD__LOWERCASE_BUTTON_TEXT:
-                        self.keyboard_abc.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_abc
-                        cur_button1_text = self.KEYBOARD__UPPERCASE_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__UPPERCASE_BUTTON_TEXT:
-                        self.keyboard_ABC.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_ABC
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT:
-                        self.keyboard_accented_lower_1.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented_lower_1
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT:
-                        self.keyboard_accented_upper_1.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented_upper_1
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT:
-                        self.keyboard_accented_lower_2.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented_lower_2
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT:
-                        self.keyboard_accented_upper_2.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented_upper_2
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT:
-                        self.keyboard_accented_lower_3.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented_lower_3
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT
-                    elif cur_button1_text == self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT:
-                        self.keyboard_accented_upper_3.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_accented_upper_3
-                        cur_button1_text = self.KEYBOARD__LOWERCASE_BUTTON_TEXT
-                    else:
-                        self.keyboard_ABC.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_ABC
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
+                    if cur_button1_text in self.text_to_keyboard_1:
+                        self.text_to_keyboard_1[cur_button1_text].set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.text_to_keyboard_1[cur_button1_text]
+                        cur_button1_text = self.button1_texts[(self.button1_texts.index(cur_button1_text) + 1) % len(self.button1_texts)]
+
                     cur_keyboard.render_keys()
 
                     # Show the changes; this loop will have two renders
@@ -1132,38 +1101,15 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                     self.hw_button2.is_selected = False
 
                     # Return to the same button1 keyboard, if applicable
-                    if cur_keyboard == self.keyboard_abc:
-                        cur_button1_text = self.KEYBOARD__LOWERCASE_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_ABC:
-                        cur_button1_text = self.KEYBOARD__UPPERCASE_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented_lower_1:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented_upper_1:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented_lower_2:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented_upper_2:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented_lower_3:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT
-                    elif cur_keyboard == self.keyboard_accented_upper_3:
-                        cur_button1_text = self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT
+                    if cur_keyboard in keyboard_to_text_1:
+                        cur_button1_text = keyboard_to_text_1[cur_keyboard]
 
-                    if cur_button2_text == self.KEYBOARD__DIGITS_BUTTON_TEXT:
-                        self.keyboard_digits.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_digits
+                    if cur_button2_text in self.text_to_keyboard_2:
+                        self.text_to_keyboard_2[cur_button2_text].set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
+                        cur_keyboard = self.text_to_keyboard_2[cur_button2_text]
                         cur_keyboard.render_keys()
-                        cur_button2_text = self.KEYBOARD__SYMBOLS_1_BUTTON_TEXT
-                    elif cur_button2_text == self.KEYBOARD__SYMBOLS_1_BUTTON_TEXT:
-                        self.keyboard_symbols_1.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_symbols_1
-                        cur_keyboard.render_keys()
-                        cur_button2_text = self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT
-                    elif cur_button2_text == self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT:
-                        self.keyboard_symbols_2.set_selected_key_indices(x=cur_keyboard.selected_key["x"], y=cur_keyboard.selected_key["y"])
-                        cur_keyboard = self.keyboard_symbols_2
-                        cur_keyboard.render_keys()
-                        cur_button2_text = self.KEYBOARD__DIGITS_BUTTON_TEXT
+                        cur_button2_text = self.button2_texts[(self.button2_texts.index(cur_button2_text) + 1) % len(self.button2_texts)]
+
                     cur_keyboard.render_keys()
 
                     # Show the changes; this loop will have two renders
