@@ -720,6 +720,8 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         text_entry_display_height = 30
 
         keyboard_start_y = text_entry_display_y + text_entry_display_height + GUIConstants.COMPONENT_PADDING
+        self.text_to_keyboard_1 = dict(); #for textual input keyboards
+        self.text_to_keyboard_2 = dict(); #for symbol/digit input keyboards
 
         self.keyboard_abc = Keyboard(
             draw=self.renderer.draw,
@@ -740,6 +742,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             ],
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT]
         )
+        self.text_to_keyboard_1[self.KEYBOARD__LOWERCASE_BUTTON_TEXT] = self.keyboard_abc
 
         self.keyboard_ABC = Keyboard(
             draw=self.renderer.draw,
@@ -761,6 +764,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_1[self.KEYBOARD__LOWERCASE_BUTTON_TEXT] = self.keyboard_abc
 
         self.keyboard_accented_lower_1 = Keyboard(
             draw=self.renderer.draw,
@@ -781,6 +785,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             ],
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT]
         )
+        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT] = self.keyboard_accented_lower_1
 
         self.keyboard_accented_upper_1 = Keyboard(
             draw=self.renderer.draw,
@@ -802,6 +807,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT] = self.keyboard_accented_upper_1
 
         self.keyboard_accented_lower_2 = Keyboard(
             draw=self.renderer.draw,
@@ -823,6 +829,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT] = self.keyboard_accented_lower_2
 
         self.keyboard_accented_upper_2 = Keyboard(
             draw=self.renderer.draw,
@@ -844,6 +851,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT] = self.keyboard_accented_upper_2
 
         self.keyboard_accented_lower_3 = Keyboard(
             draw=self.renderer.draw,
@@ -865,6 +873,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT] = self.keyboard_accented_lower_3
 
         self.keyboard_accented_upper_3 = Keyboard(
             draw=self.renderer.draw,
@@ -886,6 +895,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT] = self.keyboard_accented_upper_3
 
         self.keyboard_digits = Keyboard(
             draw=self.renderer.draw,
@@ -906,6 +916,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_2[self.KEYBOARD__DIGITS_BUTTON_TEXT] = self.keyboard_digits
 
         self.keyboard_symbols_1 = Keyboard(
             draw=self.renderer.draw,
@@ -927,6 +938,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_2[self.KEYBOARD__SYMBOLS_1_BUTTON_TEXT] = self.keyboard_symbols_1
 
         self.keyboard_symbols_2 = Keyboard(
             draw=self.renderer.draw,
@@ -948,6 +960,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
             render_now=False
         )
+        self.text_to_keyboard_2[self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT] = self.keyboard_symbols_2
 
         self.text_entry_display = TextEntryDisplay(
             canvas=self.renderer.canvas,
@@ -1002,50 +1015,18 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
 
     def _render(self):
         super()._render()
-
-        # Change from the default lowercase keyboard for the screenshot generator
-        if self.initial_keyboard == self.KEYBOARD__UPPERCASE_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_ABC
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented_lower_1
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented_upper_1
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented_lower_2
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented_upper_2
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented_lower_3
-            self.hw_button1.text = self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_accented_upper_3
-            self.hw_button1.text = self.KEYBOARD__LOWERCASE_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__DIGITS_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_digits
-            self.hw_button2.text = self.KEYBOARD__SYMBOLS_1_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__SYMBOLS_1_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_symbols_1
-            self.hw_button2.text = self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT
-
-        elif self.initial_keyboard == self.KEYBOARD__SYMBOLS_2_BUTTON_TEXT:
-            cur_keyboard = self.keyboard_symbols_2
-            self.hw_button2.text = self.KEYBOARD__DIGITS_BUTTON_TEXT
-        
+        # If the initial keyboard is a textual input keyboard, then cycle through hw_button1 text
+        if self.initial_keyboard in self.text_to_keyboard_1:
+            button_texts = list(self.text_to_keyboard_1.keys())
+            cur_keyboard = self.text_to_keyboard_1[self.initial_keyboard]
+            # Set the hw_button1 text as the keyboard of the next keyboard in the list (modulo wrap)
+            self.hw_button1.text = button_texts[(button_texts.index(self.initial_keyboard) + 1) % len(button_texts)]
+        # Else through hw_button2 text
         else:
-            cur_keyboard = self.keyboard_abc
+            button_texts = list(self.text_to_keyboard_2.keys())
+            cur_keyboard = self.text_to_keyboard_2[self.initial_keyboard]
+            # Similarly for hw_button2
+            self.hw_button2.text = button_texts[(button_texts.index(self.initial_keyboard) + 1) % len(button_texts)]
 
         self.text_entry_display.render()
         self.hw_button1.render()
