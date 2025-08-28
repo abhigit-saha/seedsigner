@@ -33,16 +33,12 @@ class TestSeedFlows(FlowTest):
         ])
 
 
-    test_passphrases = [
-        "muhpassphrase",
-        "áéíóúàèìòùâêîôûãõëïüÿăąæøåðçñşțćłšžčřňťđĺŕľĵĝħÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕËÏÜŸĂĄÆØÅÐÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ"
-    ]
-
-    @pytest.mark.parametrize("passphrase", test_passphrases)
     def test_passphrase_entry_flow(self, passphrase):
         """
         Opting to add a BIP-39 passphrase on the Finalize Seed screen should enter the
         passphrase entry / review flow and end at the SeedOptionsView. 
+
+        Note: 'passphrase' is a fixture created in the conftest.py file that parametrizes TEST_PASSPHRASES
         """
         self.run_sequence([
             FlowStep(MainMenuView, button_data_selection=MainMenuView.SCAN),
