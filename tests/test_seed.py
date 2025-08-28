@@ -12,6 +12,8 @@ def test_seed():
 	# Test seed with passphrase
 	seed_1 = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase=TEST_PASSPHRASES[0])
 	
+	# Seed bytes are generated using trezor/python-mnemonic library and setting language as "English" and mnemonic phrase as the mnemonic above
+	# with the passphrases specified in TEST_PASSPHRASES
 	assert seed_1.seed_bytes == b'\x13\xc8\xdfn\x17\xf4\xb3\x06n\x12\xfd\x1bE\x0c\x8d\x819\xe2\xf1\x9ar\xc1j\xde\x14<\xe8\x98\x8e\xd8=\xb8\x94j\x9a\x0c\xaf\xf4\x04\xa6s\xc8\xb4\xd3\xf1\xd4\x85\xde\x84u\xac\x88\\p\xeb\xcf\xbd\xc4A\xb5\xa1\xc3\xb1\xfa'
 	
 	assert seed_1.mnemonic_str == "obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash"
