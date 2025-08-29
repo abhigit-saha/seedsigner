@@ -14,6 +14,7 @@ from seedsigner.gui.components import (Button, FontAwesomeIconConstants, Fonts, 
 from seedsigner.gui.keyboard import Keyboard, TextEntryDisplay
 from seedsigner.gui.renderer import Renderer
 from seedsigner.models.threads import BaseThread, ThreadsafeCounter
+from seedsigner.models.settings import Settings, SettingsConstants
 
 from .screen import RET_CODE__BACK_BUTTON, BaseScreen, BaseTopNavScreen, ButtonListScreen, ButtonOption, KeyboardScreen, LargeIconStatusScreen, WarningEdgesMixin
 
@@ -669,20 +670,14 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
 
     # Only used by the screenshot generator
     initial_keyboard: str = None
+    is_full_charset: bool = False
+    full_charset: str = None
 
     KEYBOARD__LOWERCASE_BUTTON_TEXT = "abc"
     KEYBOARD__UPPERCASE_BUTTON_TEXT = "ABC"
     KEYBOARD__DIGITS_BUTTON_TEXT = "123"
     KEYBOARD__SYMBOLS_1_BUTTON_TEXT = "!@#"
     KEYBOARD__SYMBOLS_2_BUTTON_TEXT = "*[]"
-    KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT = "áéí"
-    KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT = "ÁÉÍ"
-    KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT = "ëïü"
-    KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT = "ËÏÜ"
-    KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT = "çñş"
-    KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT = "ÇÑŞ"
-
-
 
     def __post_init__(self):
         self.title = _("BIP-39 Passphrase")
@@ -699,19 +694,6 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         # Isolate the more math-oriented or just uncommon symbols
         keys_symbol_2 = """^*[]{}_\\|<>/`~"""
 
-        # Split accented characters: separate vowels and consonants across keyboards
-        # Keyboard 1: Common accented vowels
-        keys_accented_lower_1 = "áéíóúàèìòùâêîôûãõ"
-        keys_accented_upper_1 = "ÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕ"
-        
-        # Keyboard 2: Some rare accented vowels
-        keys_accented_lower_2 = "ëïüÿăąæøåð"
-        keys_accented_upper_2 = "ËÏÜŸĂĄÆØÅÐ"
-        
-        # Keyboard 3: Some common accented consonants
-        keys_accented_lower_3 = "çñşțćłšžčřňťđĺŕľĵĝħ"
-        keys_accented_upper_3 = "ÇÑŞȚĆŁŠŽČŘŇŤĐĹŔĽĴĜĦ"
-
         # Set up the keyboard params
         self.right_panel_buttons_width = 56
 
@@ -722,6 +704,62 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         keyboard_start_y = text_entry_display_y + text_entry_display_height + GUIConstants.COMPONENT_PADDING
         self.text_to_keyboard_1 = dict(); #for textual input keyboards
         self.text_to_keyboard_2 = dict(); #for symbol/digit input keyboards
+
+        # Both the is_full_charset (in settings) and the full_charset should be specified
+        # For English (default), full_charset is None so this won't be executed
+        if self.is_full_charset and self.full_charset:
+            self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT = self.full_charset[0][0:3]
+            self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT = self.full_charset[1][0:3]
+
+            keys_accented_lower= self.full_charset[0]
+            n_rows_lower = math.ceil(len(keys_accented_lower) / max_cols)+1
+
+            keys_accented_upper= self.full_charset[1]
+            n_rows_upper = math.ceil(len(keys_accented_upper) / max_cols)+1
+
+            self.keyboard_accented_lower = Keyboard(
+                draw=self.renderer.draw,
+                charset=keys_accented_lower,
+                rows=n_rows_lower,
+                cols=max_cols,
+                rect=(
+                    GUIConstants.COMPONENT_PADDING,
+                    keyboard_start_y,
+                    self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
+                    self.canvas_height - GUIConstants.EDGE_PADDING
+                ),
+                additional_keys=[
+                    Keyboard.KEY_SPACE_5,
+                    Keyboard.KEY_CURSOR_LEFT,
+                    Keyboard.KEY_CURSOR_RIGHT,
+                    Keyboard.KEY_BACKSPACE
+                ],
+                auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
+                render_now=False
+            )
+            self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT] = self.keyboard_accented_lower
+
+            self.keyboard_accented_upper = Keyboard(
+                draw=self.renderer.draw,
+                charset=keys_accented_upper,
+                rows=n_rows_upper,
+                cols=max_cols,
+                rect=(
+                    GUIConstants.COMPONENT_PADDING,
+                    keyboard_start_y,
+                    self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
+                    self.canvas_height - GUIConstants.EDGE_PADDING
+                ),
+                additional_keys=[
+                    Keyboard.KEY_SPACE_5,
+                    Keyboard.KEY_CURSOR_LEFT,
+                    Keyboard.KEY_CURSOR_RIGHT,
+                    Keyboard.KEY_BACKSPACE
+                ],
+                auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
+                render_now=False
+            )
+            self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT] = self.keyboard_accented_upper
 
         self.keyboard_abc = Keyboard(
             draw=self.renderer.draw,
@@ -765,137 +803,6 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
             render_now=False
         )
         self.text_to_keyboard_1[self.KEYBOARD__UPPERCASE_BUTTON_TEXT] = self.keyboard_ABC
-
-        self.keyboard_accented_lower_1 = Keyboard(
-            draw=self.renderer.draw,
-            charset=keys_accented_lower_1,
-            rows=3,
-            cols=max_cols,
-            rect=(
-                GUIConstants.COMPONENT_PADDING,
-                keyboard_start_y,
-                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
-                self.canvas_height - GUIConstants.EDGE_PADDING
-            ),
-            additional_keys=[
-                Keyboard.KEY_SPACE_5,
-                Keyboard.KEY_CURSOR_LEFT,
-                Keyboard.KEY_CURSOR_RIGHT,
-                Keyboard.KEY_BACKSPACE
-            ],
-            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT]
-        )
-        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_1_BUTTON_TEXT] = self.keyboard_accented_lower_1
-
-        self.keyboard_accented_upper_1 = Keyboard(
-            draw=self.renderer.draw,
-            charset=keys_accented_upper_1,
-            rows=3,
-            cols=max_cols,
-            rect=(
-                GUIConstants.COMPONENT_PADDING,
-                keyboard_start_y,
-                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
-                self.canvas_height - GUIConstants.EDGE_PADDING
-            ),
-            additional_keys=[
-                Keyboard.KEY_SPACE_5,
-                Keyboard.KEY_CURSOR_LEFT,
-                Keyboard.KEY_CURSOR_RIGHT,
-                Keyboard.KEY_BACKSPACE
-            ],
-            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
-            render_now=False
-        )
-        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_1_BUTTON_TEXT] = self.keyboard_accented_upper_1
-
-        self.keyboard_accented_lower_2 = Keyboard(
-            draw=self.renderer.draw,
-            charset=keys_accented_lower_2,
-            rows=3,
-            cols=max_cols,
-            rect=(
-                GUIConstants.COMPONENT_PADDING,
-                keyboard_start_y,
-                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
-                self.canvas_height - GUIConstants.EDGE_PADDING
-            ),
-            additional_keys=[
-                Keyboard.KEY_SPACE_5,
-                Keyboard.KEY_CURSOR_LEFT,
-                Keyboard.KEY_CURSOR_RIGHT,
-                Keyboard.KEY_BACKSPACE
-            ],
-            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
-            render_now=False
-        )
-        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_2_BUTTON_TEXT] = self.keyboard_accented_lower_2
-
-        self.keyboard_accented_upper_2 = Keyboard(
-            draw=self.renderer.draw,
-            charset=keys_accented_upper_2,
-            rows=3,
-            cols=max_cols,
-            rect=(
-                GUIConstants.COMPONENT_PADDING,
-                keyboard_start_y,
-                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
-                self.canvas_height - GUIConstants.EDGE_PADDING
-            ),
-            additional_keys=[
-                Keyboard.KEY_SPACE_5,
-                Keyboard.KEY_CURSOR_LEFT,
-                Keyboard.KEY_CURSOR_RIGHT,
-                Keyboard.KEY_BACKSPACE
-            ],
-            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
-            render_now=False
-        )
-        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_2_BUTTON_TEXT] = self.keyboard_accented_upper_2
-
-        self.keyboard_accented_lower_3 = Keyboard(
-            draw=self.renderer.draw,
-            charset=keys_accented_lower_3,
-            rows=4,
-            cols=max_cols,
-            rect=(
-                GUIConstants.COMPONENT_PADDING,
-                keyboard_start_y,
-                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
-                self.canvas_height - GUIConstants.EDGE_PADDING
-            ),
-            additional_keys=[
-                Keyboard.KEY_SPACE_5,
-                Keyboard.KEY_CURSOR_LEFT,
-                Keyboard.KEY_CURSOR_RIGHT,
-                Keyboard.KEY_BACKSPACE
-            ],
-            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
-            render_now=False
-        )
-        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_3_BUTTON_TEXT] = self.keyboard_accented_lower_3
-
-        self.keyboard_accented_upper_3 = Keyboard(
-            draw=self.renderer.draw,
-            charset=keys_accented_upper_3,
-            rows=4,
-            cols=max_cols,
-            rect=(
-                GUIConstants.COMPONENT_PADDING,
-                keyboard_start_y,
-                self.canvas_width - GUIConstants.COMPONENT_PADDING - self.right_panel_buttons_width,
-                self.canvas_height - GUIConstants.EDGE_PADDING
-            ),
-            additional_keys=[
-                Keyboard.KEY_SPACE_5,
-                Keyboard.KEY_CURSOR_LEFT,
-                Keyboard.KEY_CURSOR_RIGHT,
-                Keyboard.KEY_BACKSPACE
-            ],
-            auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
-            render_now=False
-        )
-        self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_3_BUTTON_TEXT] = self.keyboard_accented_upper_3
 
         self.keyboard_digits = Keyboard(
             draw=self.renderer.draw,
