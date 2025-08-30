@@ -670,8 +670,8 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
 
     # Only used by the screenshot generator
     initial_keyboard: str = None
-    is_full_charset: bool = False
-    full_charset: str = None
+    has_special_charset: bool = False
+    special_charset: str = None
 
     KEYBOARD__LOWERCASE_BUTTON_TEXT = "abc"
     KEYBOARD__UPPERCASE_BUTTON_TEXT = "ABC"
@@ -705,21 +705,21 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
         self.text_to_keyboard_1 = dict(); #for textual input keyboards
         self.text_to_keyboard_2 = dict(); #for symbol/digit input keyboards
 
-        # Both the is_full_charset (in settings) and the full_charset should be specified
-        # For English (default), full_charset is None so this won't be executed
-        if self.is_full_charset and self.full_charset:
-            self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT = self.full_charset[0][0:3]
-            self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT = self.full_charset[1][0:3]
+        # Both the has_special_charset (in settings) and the special_charset should be specified
+        # For English (default), special_charset is None so this won't be executed
+        if self.has_special_charset and self.special_charset:
+            self.KEYBOARD__SPECIAL_LOWERCASE_BUTTON_TEXT = self.special_charset[0][0:3]
+            self.KEYBOARD__SPECIAL_UPPERCASE_BUTTON_TEXT = self.special_charset[1][0:3]
 
-            keys_accented_lower= self.full_charset[0]
-            n_rows_lower = math.ceil(len(keys_accented_lower) / max_cols)+1
+            keys_special_lower= self.special_charset[0]
+            n_rows_lower = math.ceil(len(keys_special_lower) / max_cols)+1
 
-            keys_accented_upper= self.full_charset[1]
-            n_rows_upper = math.ceil(len(keys_accented_upper) / max_cols)+1
+            keys_special_upper= self.special_charset[1]
+            n_rows_upper = math.ceil(len(keys_special_upper) / max_cols)+1
 
-            self.keyboard_accented_lower = Keyboard(
+            self.keyboard_special_lower = Keyboard(
                 draw=self.renderer.draw,
-                charset=keys_accented_lower,
+                charset=keys_special_lower,
                 rows=n_rows_lower,
                 cols=max_cols,
                 rect=(
@@ -737,11 +737,11 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                 auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
                 render_now=False
             )
-            self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_LOWERCASE_BUTTON_TEXT] = self.keyboard_accented_lower
+            self.text_to_keyboard_1[self.KEYBOARD__SPECIAL_LOWERCASE_BUTTON_TEXT] = self.keyboard_special_lower
 
-            self.keyboard_accented_upper = Keyboard(
+            self.keyboard_special_upper = Keyboard(
                 draw=self.renderer.draw,
-                charset=keys_accented_upper,
+                charset=keys_special_upper,
                 rows=n_rows_upper,
                 cols=max_cols,
                 rect=(
@@ -759,7 +759,7 @@ class SeedAddPassphraseScreen(BaseTopNavScreen):
                 auto_wrap=[Keyboard.WRAP_LEFT, Keyboard.WRAP_RIGHT],
                 render_now=False
             )
-            self.text_to_keyboard_1[self.KEYBOARD__ACCENTED_UPPERCASE_BUTTON_TEXT] = self.keyboard_accented_upper
+            self.text_to_keyboard_1[self.KEYBOARD__SPECIAL_UPPERCASE_BUTTON_TEXT] = self.keyboard_special_upper
 
         self.keyboard_abc = Keyboard(
             draw=self.renderer.draw,

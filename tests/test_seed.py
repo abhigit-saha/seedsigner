@@ -20,7 +20,7 @@ def test_seed():
 	
 	assert seed_1.passphrase == unicodedata.normalize("NFKD", TEST_PASSPHRASES[0])
 	
-	# Test seed with an accented passphrase
+	# Test seed with a special character passphrase
 	seed_2 = Seed(mnemonic="obscure bone gas open exotic abuse virus bunker shuffle nasty ship dash".split(), passphrase=TEST_PASSPHRASES[1])
 	
 	assert seed_2.seed_bytes == b'\xea\xe4\xd6\xb5\x17\x91L\x12h\x9a\x96\x06\x08\x13\xf6\xe3\x80O\x9d\xa8\xeaU\xc8\xef\xbeSx\xe6\xb91\xc4\xd2_\xda\xae\x9a\xda\xc18q\x1b\x15u\xe6f\x8cw\xc1\x10\x8b\x94gV\x85\x10\xf4Rp[\x06\x8c\x89o\x07'

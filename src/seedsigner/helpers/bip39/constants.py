@@ -1,4 +1,4 @@
 from  seedsigner.models.settings import SettingsConstants 
 
-FULL_CHARSETS = dict(SettingsConstants.PASSPHRASE_FULL_CHARSET) 
+SPECIAL_CHARSETS = dict(SettingsConstants.PASSPHRASE_SPECIAL_CHARSET)
 
