@@ -24,8 +24,8 @@ class ToolsMenuView(View):
     IMAGE = ButtonOption("New seed", FontAwesomeIconConstants.CAMERA)
     DICE = ButtonOption("New seed", FontAwesomeIconConstants.DICE)
     KEYBOARD = ButtonOption("Calc 12th/24th word", FontAwesomeIconConstants.KEYBOARD)
-    ADDRESS_EXPLORER = ButtonOption("Address Explorer")
-    VERIFY_ADDRESS = ButtonOption("Verify Address")
+    ADDRESS_EXPLORER = ButtonOption("Address explorer")
+    VERIFY_ADDRESS = ButtonOption("Verify address")
 
     def run(self):
         button_data = [self.IMAGE, self.DICE, self.KEYBOARD, self.ADDRESS_EXPLORER, self.VERIFY_ADDRESS]
@@ -65,7 +65,7 @@ class ToolsImageEntropyLivePreviewView(View):
     def run(self):
         from seedsigner.gui.screens.tools_screens import ToolsImageEntropyLivePreviewScreen
         self.controller.image_entropy_preview_frames = None
-        ret = ToolsImageEntropyLivePreviewScreen().display()
+        ret = self.run_screen(ToolsImageEntropyLivePreviewScreen)
 
         if ret == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
@@ -105,9 +105,10 @@ class ToolsImageEntropyFinalImageView(View):
             sampling_method=Image.Resampling.BICUBIC,
         )
         
-        ret = ToolsImageEntropyFinalImageScreen(
+        ret = self.run_screen(
+            ToolsImageEntropyFinalImageScreen,
             final_image=display_version
-        ).display()
+        )
 
         if ret == RET_CODE__BACK_BUTTON:
             # Go back to live preview and reshoot
@@ -125,10 +126,11 @@ class ToolsImageEntropyMnemonicLengthView(View):
     def run(self):
         button_data = [self.TWELVE_WORDS, self.TWENTYFOUR_WORDS]
 
-        selected_menu_num = ButtonListScreen(
+        selected_menu_num = self.run_screen(
+            ButtonListScreen,
             title=_("Mnemonic Length?"),
             button_data=button_data,
-        ).display()
+        )
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
@@ -213,12 +215,13 @@ class ToolsDiceEntropyMnemonicLengthView(View):
         TWENTY_FOUR = ButtonOption(twenty_four, return_data=mnemonic_generation.DICE__NUM_ROLLS__24WORD)
 
         button_data = [TWELVE, TWENTY_FOUR]
-        selected_menu_num = ButtonListScreen(
+        selected_menu_num = self.run_screen(
+            ButtonListScreen,
             title=_("Mnemonic Length"),
             is_bottom_list=True,
             is_button_text_centered=True,
             button_data=button_data,
-        ).display()
+        )
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
@@ -239,9 +242,10 @@ class ToolsDiceEntropyEntryView(View):
 
     def run(self):
         from seedsigner.gui.screens.tools_screens import ToolsDiceEntropyEntryScreen
-        ret = ToolsDiceEntropyEntryScreen(
+        ret = self.run_screen(
+            ToolsDiceEntropyEntryScreen,
             return_after_n_chars=self.total_rolls,
-        ).display()
+        )
 
         if ret == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
@@ -306,11 +310,12 @@ class ToolsCalcFinalWordFinalizePromptView(View):
             num_entropy_bits = 3
 
         button_data = [self.COIN_FLIPS, self.SELECT_WORD, self.ZEROS]
-        selected_menu_num = ToolsCalcFinalWordFinalizePromptScreen(
+        selected_menu_num = self.run_screen(
+            ToolsCalcFinalWordFinalizePromptScreen,
             mnemonic_length=mnemonic_length,
             num_entropy_bits=num_entropy_bits,
             button_data=button_data,
-        ).display()
+        )
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
@@ -342,9 +347,10 @@ class ToolsCalcFinalWordCoinFlipsView(View):
         else:
             total_flips = 3
         
-        ret_val = ToolsCoinFlipEntryScreen(
+        ret_val = self.run_screen(
+            ToolsCoinFlipEntryScreen,
             return_after_n_chars=total_flips,
-        ).display()
+        )
 
         if ret_val == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
@@ -446,12 +452,13 @@ class ToolsCalcFinalWordDoneView(View):
 
         button_data = [self.LOAD, self.DISCARD]
 
-        selected_menu_num = ToolsCalcFinalWordDoneScreen(
+        selected_menu_num = self.run_screen(
+            ToolsCalcFinalWordDoneScreen,
             final_word=final_word,
             mnemonic_word_length=mnemonic_word_length,
             fingerprint=self.controller.storage.get_pending_mnemonic_fingerprint(self.settings.get_value(SettingsConstants.SETTING__NETWORK), wordlist_language_code),
             button_data=button_data,
-        ).display()
+        )
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:
             return Destination(BackStackView)
@@ -535,10 +542,10 @@ class ToolsAddressExplorerSelectSourceView(View):
 
 class ToolsAddressExplorerAddressTypeView(View):
     # TRANSLATOR_NOTE: label for addresses where others send us incoming payments
-    RECEIVE = ButtonOption("Receive Addresses")
+    RECEIVE = ButtonOption("Receive addresses")
 
     # TRANSLATOR_NOTE: label for addresses that collect the change from our own outgoing payments
-    CHANGE = ButtonOption("Change Addresses")
+    CHANGE = ButtonOption("Change addresses")
 
 
     def __init__(self, seed_num: int = None, script_type: str = None, custom_derivation: str = None):
