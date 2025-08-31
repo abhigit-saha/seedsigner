@@ -131,6 +131,8 @@ class Seed:
 
     @property
     def seedqr_supported(self) -> bool:
+        if self.wordlist_language_code is not SettingsConstants.LOCALE__ENGLISH:
+            return False
         return True
 
 
