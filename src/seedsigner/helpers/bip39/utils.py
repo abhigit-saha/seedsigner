@@ -1,11 +1,9 @@
 import os
 import ast
 from seedsigner.models.settings_definition import SettingsConstants
+from .constants import WORDLIST_LANGUAGES
 
-# Create a set of supported language codes for quick validation
-_SUPPORTED_LANGUAGES = {x for x, y in SettingsConstants.ALL_WORDLIST_LANGUAGES}
-
-def _load_wordlist_from_file(wordlist_language_code: str) -> list:
+def load_wordlist_from_file(wordlist_language_code: str) -> list:
     """
     Load wordlist from file system path in seedsigner-translations submodule.
     """
@@ -40,7 +38,7 @@ def get_bip39_wordlist(wordlist_language_code: str) -> list:
     Returns the wordlist for the specified language code.
     """
     # Only support languages that are in ALL_WORDLIST_LANGUAGES
-    if wordlist_language_code not in _SUPPORTED_LANGUAGES:
+    if wordlist_language_code not in WORDLIST_LANGUAGES:
         raise ValueError(f"Unsupported language code: {wordlist_language_code}")
 
     if wordlist_language_code == SettingsConstants.LOCALE__ENGLISH:
@@ -49,13 +47,13 @@ def get_bip39_wordlist(wordlist_language_code: str) -> list:
             raise ValueError("English wordlist is not loaded correctly.")
         return WORDLIST__ENGLISH
     else:
-        return _load_wordlist_from_file(wordlist_language_code)
+        return load_wordlist_from_file(wordlist_language_code)
 
 def get_possible_alphabet(wordlist_language_code: str) -> str: 
     """
     Returns the possible alphabet for the specified language code.
     """
-    if wordlist_language_code not in _SUPPORTED_LANGUAGES:
+    if wordlist_language_code not in WORDLIST_LANGUAGES:
         raise ValueError(f"Unsupported language code: {wordlist_language_code}")
     
     return "abcdefghijklmnopqrstuvwxyz"
